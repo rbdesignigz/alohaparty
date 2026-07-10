@@ -64,8 +64,8 @@ export default function Header({
           onClick={() => { setActiveScreen('home'); setSearchQuery(''); }}
           className={`transition-colors duration-200 cursor-pointer ${
             activeScreen === 'home' && !searchQuery
-              ? 'text-[#93474d] font-semibold border-b-2 border-[#93474d] pb-1'
-              : 'text-[#867273] hover:text-[#93474d]'
+              ? 'text-[#f4949a] font-semibold border-b-2 border-[#f4949a] pb-1'
+              : 'text-[#867273] hover:text-[#f4949a]'
           }`}
         >
           Inicio
@@ -75,8 +75,8 @@ export default function Header({
           onClick={() => { setActiveScreen('store'); }}
           className={`transition-colors duration-200 cursor-pointer ${
             activeScreen === 'store'
-              ? 'text-[#93474d] font-semibold border-b-2 border-[#93474d] pb-1'
-              : 'text-[#867273] hover:text-[#93474d]'
+              ? 'text-[#f4949a] font-semibold border-b-2 border-[#f4949a] pb-1'
+              : 'text-[#867273] hover:text-[#f4949a]'
           }`}
         >
           Tienda
@@ -86,8 +86,8 @@ export default function Header({
           onClick={() => { setActiveScreen('about'); }}
           className={`transition-colors duration-200 cursor-pointer ${
             activeScreen === 'about'
-              ? 'text-[#93474d] font-semibold border-b-2 border-[#93474d] pb-1'
-              : 'text-[#867273] hover:text-[#93474d]'
+              ? 'text-[#f4949a] font-semibold border-b-2 border-[#f4949a] pb-1'
+              : 'text-[#867273] hover:text-[#f4949a]'
           }`}
         >
           Nosotros
@@ -116,7 +116,7 @@ export default function Header({
         <button
           id="cart-trigger-btn"
           onClick={() => setActiveScreen('checkout')}
-          className="relative p-2 text-[#867273] hover:text-[#93474d] hover:bg-[#93474d]/5 rounded-full transition-colors cursor-pointer"
+          className="relative p-2 text-[#867273] hover:text-[#f4949a] hover:bg-[#f4949a]/5 rounded-full transition-colors cursor-pointer"
           title="Ver Carrito"
         >
           <ShoppingCart className="w-5 h-5" />
@@ -156,7 +156,7 @@ export default function Header({
                         setActiveScreen('admin');
                         setShowProfileMenu(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-xs text-[#93474d] hover:bg-[#93474d]/5 flex items-center gap-2 font-medium cursor-pointer"
+                      className="w-full text-left px-4 py-2 text-xs text-[#f4949a] hover:bg-[#f4949a]/5 flex items-center gap-2 font-medium cursor-pointer"
                     >
                       <LayoutDashboard className="w-3.5 h-3.5" />
                       Panel Administrador
@@ -190,7 +190,7 @@ export default function Header({
         <button
           id="mobile-menu-trigger"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden p-2 text-[#867273] hover:text-[#93474d] rounded-full transition-colors cursor-pointer"
+          className="md:hidden p-2 text-[#867273] hover:text-[#f4949a] rounded-full transition-colors cursor-pointer"
         >
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>

@@ -11,7 +11,7 @@ export default function AboutView({ setActiveScreen }: AboutViewProps) {
       
       {/* Intro section */}
       <section className="flex flex-col gap-3 text-center md:text-left">
-        <span className="text-xs font-bold text-[#93474d] uppercase tracking-widest flex items-center gap-2 justify-center md:justify-start">
+        <span className="text-xs font-bold text-[#f4949a] uppercase tracking-widest flex items-center gap-2 justify-center md:justify-start">
           <Sparkles className="w-4 h-4" />
           Nuestra Historia
         </span>
@@ -45,7 +45,7 @@ export default function AboutView({ setActiveScreen }: AboutViewProps) {
         
         {/* Pillar 1: Hecho a Mano */}
         <div className="bg-white rounded-2xl p-6 border border-[#867273]/15 shadow-xs text-center flex flex-col items-center gap-3">
-          <span className="w-10 h-10 rounded-full bg-[#93474d]/10 text-[#93474d] flex items-center justify-center">
+          <span className="w-10 h-10 rounded-full bg-[#f4949a]/10 text-[#f4949a] flex items-center justify-center">
             <Scissors className="w-5 h-5" />
           </span>
           <h4 className="text-xs font-bold text-[#1b1c1c]">Diseño Artesanal</h4>
@@ -81,7 +81,7 @@ export default function AboutView({ setActiveScreen }: AboutViewProps) {
       <div className="flex justify-center mt-4">
         <button
           onClick={() => setActiveScreen('store')}
-          className="px-8 py-3 bg-[#93474d] hover:bg-[#712d34] text-white rounded-full font-sans font-bold text-xs shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          className="px-8 py-3 bg-[#f4949a] hover:bg-[#e3858b] text-white rounded-full font-sans font-bold text-xs shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
           Volver a la Tienda y Comprar
         </button>

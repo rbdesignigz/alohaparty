@@ -325,13 +325,13 @@ export default function AdminView({
         
         {/* Branding header */}
         <div id="sidebar-branding" className="px-2 pt-2 cursor-pointer" onClick={() => setActiveScreen('store')}>
-          <h1 className="text-xl font-sans font-extrabold text-[#93474d] tracking-tight">Aloha Party</h1>
+          <h1 className="text-xl font-sans font-extrabold text-[#f4949a] tracking-tight">Aloha Party</h1>
           <p className="text-[10px] text-[#867273] uppercase tracking-widest font-bold mt-0.5">Papelería Creativa</p>
         </div>
 
         {/* User Card */}
-        <div id="sidebar-user-card" className="flex items-center gap-3 bg-[#93474d]/10 rounded-2xl p-4 border border-[#93474d]/20">
-          <div className="w-10 h-10 rounded-full bg-[#93474d] text-white flex items-center justify-center font-bold text-sm">
+        <div id="sidebar-user-card" className="flex items-center gap-3 bg-[#f4949a]/10 rounded-2xl p-4 border border-[#f4949a]/20">
+          <div className="w-10 h-10 rounded-full bg-[#f4949a] text-white flex items-center justify-center font-bold text-sm">
             AA
           </div>
           <div className="text-left">
@@ -349,8 +349,8 @@ export default function AdminView({
               onClick={() => setActiveTab('dashboard')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'dashboard'
-                  ? 'bg-white text-[#93474d] shadow-xs translate-x-1'
-                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#93474d]'
+                  ? 'bg-white text-[#f4949a] shadow-xs translate-x-1'
+                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#f4949a]'
               }`}
             >
               <LayoutDashboard className="w-4 h-4" />
@@ -366,7 +366,7 @@ export default function AdminView({
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'categories'
                   ? 'bg-[#cce8bd] text-[#364d2d] shadow-xs translate-x-1'
-                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#93474d]'
+                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#f4949a]'
               }`}
             >
               <FolderPlus className="w-4 h-4" />
@@ -382,7 +382,7 @@ export default function AdminView({
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'products'
                   ? 'bg-[#cce8bd] text-[#364d2d] shadow-xs translate-x-1'
-                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#93474d]'
+                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#f4949a]'
               }`}
             >
               <ShoppingBag className="w-4 h-4" />
@@ -397,8 +397,8 @@ export default function AdminView({
               onClick={() => setActiveTab('users')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'users'
-                  ? 'bg-white text-[#93474d] shadow-xs translate-x-1'
-                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#93474d]'
+                  ? 'bg-white text-[#f4949a] shadow-xs translate-x-1'
+                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#f4949a]'
               }`}
             >
               <Users className="w-4 h-4" />
@@ -413,8 +413,8 @@ export default function AdminView({
               onClick={() => setActiveTab('orders')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'orders'
-                  ? 'bg-white text-[#93474d] shadow-xs translate-x-1'
-                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#93474d]'
+                  ? 'bg-white text-[#f4949a] shadow-xs translate-x-1'
+                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#f4949a]'
               }`}
             >
               <ClipboardList className="w-4 h-4" />
@@ -434,8 +434,8 @@ export default function AdminView({
               onClick={() => setActiveTab('settings')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'settings'
-                  ? 'bg-white text-[#93474d] shadow-xs translate-x-1'
-                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#93474d]'
+                  ? 'bg-white text-[#f4949a] shadow-xs translate-x-1'
+                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#f4949a]'
               }`}
             >
               <SettingsIcon className="w-4 h-4" />
@@ -448,7 +448,7 @@ export default function AdminView({
         <button
           id="sidebar-new-product-btn"
           onClick={handleOpenAddModal}
-          className="w-full bg-[#93474d] hover:bg-[#712d34] text-white text-xs font-bold py-3.5 rounded-full shadow-sm hover:-translate-y-0.5 active:translate-y-0 active:scale-95 duration-150 transition-all flex items-center justify-center gap-2 cursor-pointer border border-[#867273]/20"
+          className="w-full bg-[#f4949a] hover:bg-[#e3858b] text-white text-xs font-bold py-3.5 rounded-full shadow-sm hover:-translate-y-0.5 active:translate-y-0 active:scale-95 duration-150 transition-all flex items-center justify-center gap-2 cursor-pointer border border-[#867273]/20"
         >
           <Plus className="w-4 h-4" />
           <span>New Product</span>
@@ -458,7 +458,7 @@ export default function AdminView({
         <button
           id="sidebar-back-store-btn"
           onClick={() => setActiveScreen('store')}
-          className="mt-auto w-full border border-[#867273]/30 text-[#867273] hover:text-[#93474d] hover:border-[#93474d] text-[11px] font-bold py-2 rounded-xl transition-all cursor-pointer text-center"
+          className="mt-auto w-full border border-[#867273]/30 text-[#867273] hover:text-[#f4949a] hover:border-[#f4949a] text-[11px] font-bold py-2 rounded-xl transition-all cursor-pointer text-center"
         >
           Volver a la Tienda
         </button>
@@ -478,7 +478,7 @@ export default function AdminView({
               </div>
               <button
                 onClick={handleOpenAddCategoryModal}
-                className="bg-[#93474d] hover:bg-[#712d34] text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-sm hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                className="bg-[#f4949a] hover:bg-[#e3858b] text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-sm hover:-translate-y-0.5 transition-all flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 <span>New Category</span>
@@ -552,7 +552,7 @@ export default function AdminView({
               
               {/* Card 1: Total Products */}
               <div className="bg-white rounded-2xl p-6 border border-[#867273]/15 shadow-xs flex items-center gap-4 hover:-translate-y-0.5 transition-transform">
-                <span className="w-12 h-12 bg-[#93474d]/10 text-[#93474d] rounded-full flex items-center justify-center">
+                <span className="w-12 h-12 bg-[#f4949a]/10 text-[#f4949a] rounded-full flex items-center justify-center">
                   <ShoppingBag className="w-6 h-6" />
                 </span>
                 <div className="text-left">
@@ -656,7 +656,7 @@ export default function AdminView({
                           <button
                             id={`inventory-edit-${product.id}`}
                             onClick={() => handleOpenEditModal(product)}
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-[#867273] hover:bg-[#efeded] hover:text-[#93474d] transition-all cursor-pointer"
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-[#867273] hover:bg-[#efeded] hover:text-[#f4949a] transition-all cursor-pointer"
                             title="Editar"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
@@ -740,7 +740,7 @@ export default function AdminView({
                       key={order.id} 
                       className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 items-center hover:bg-[#fbf9f8]/50 transition-colors"
                     >
-                      <div className="col-span-2 text-xs font-bold text-[#93474d]">
+                      <div className="col-span-2 text-xs font-bold text-[#f4949a]">
                         {order.id}
                       </div>
                       <div className="col-span-3 text-left">
@@ -862,7 +862,7 @@ export default function AdminView({
                 {/* Simulated SVG Bar chart */}
                 <div className="h-48 flex items-end justify-between gap-3 pt-6 px-2">
                   <div className="flex flex-col items-center flex-1 gap-2">
-                    <div className="w-full bg-[#93474d]/80 hover:bg-[#93474d] rounded-t-lg transition-all h-28" title="Cake Toppers: $1,250"></div>
+                    <div className="w-full bg-[#f4949a]/80 hover:bg-[#f4949a] rounded-t-lg transition-all h-28" title="Cake Toppers: $1,250"></div>
                     <span className="text-[9px] text-[#867273] font-semibold truncate max-w-[50px]">Toppers</span>
                   </div>
                   <div className="flex flex-col items-center flex-1 gap-2">
@@ -878,7 +878,7 @@ export default function AdminView({
                     <span className="text-[9px] text-[#867273] font-semibold truncate max-w-[50px]">Guirnaldas</span>
                   </div>
                   <div className="flex flex-col items-center flex-1 gap-2">
-                    <div className="w-full bg-[#93474d]/45 hover:bg-[#93474d]/60 rounded-t-lg transition-all h-24" title="Cajitas: $1,100"></div>
+                    <div className="w-full bg-[#f4949a]/45 hover:bg-[#f4949a]/60 rounded-t-lg transition-all h-24" title="Cajitas: $1,100"></div>
                     <span className="text-[9px] text-[#867273] font-semibold truncate max-w-[50px]">Cajitas</span>
                   </div>
                 </div>
@@ -1008,13 +1008,13 @@ export default function AdminView({
             {/* Modal Header */}
             <div className="flex justify-between items-center border-b border-[#867273]/15 pb-4">
               <h3 className="font-sans font-bold text-base text-[#1b1c1c] flex items-center gap-2">
-                <FolderPlus className="w-5 h-5 text-[#93474d]" />
+                <FolderPlus className="w-5 h-5 text-[#f4949a]" />
                 <span>{modalMode === 'add' ? 'Crear Nuevo Producto' : 'Editar Producto'}</span>
               </h3>
               <button
                 id="close-product-modal"
                 onClick={() => setShowProductModal(false)}
-                className="text-[#867273] hover:text-[#93474d] rounded-full p-1 hover:bg-[#efeded] transition-colors cursor-pointer"
+                className="text-[#867273] hover:text-[#f4949a] rounded-full p-1 hover:bg-[#efeded] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1098,13 +1098,13 @@ export default function AdminView({
                   ) : formImage ? (
                     <div className="flex flex-col items-center gap-3">
                       <img src={formImage} alt="Preview" className="h-32 object-contain rounded-lg border border-[#867273]/20" />
-                      <span className="text-[10px] font-bold text-[#867273] underline group-hover:text-[#93474d] relative z-0">
+                      <span className="text-[10px] font-bold text-[#867273] underline group-hover:text-[#f4949a] relative z-0">
                         Haz clic o arrastra para cambiar la imagen
                       </span>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-2 py-4">
-                      <div className="w-10 h-10 rounded-full bg-[#fbf9f8] flex items-center justify-center text-[#867273] group-hover:text-[#93474d] group-hover:bg-[#ffdada]/30 transition-colors">
+                      <div className="w-10 h-10 rounded-full bg-[#fbf9f8] flex items-center justify-center text-[#867273] group-hover:text-[#f4949a] group-hover:bg-[#ffdada]/30 transition-colors">
                         <UploadCloud className="w-5 h-5" />
                       </div>
                       <div>
@@ -1131,7 +1131,7 @@ export default function AdminView({
               <button
                 id="modal-product-submit"
                 type="submit"
-                className="bg-[#93474d] hover:bg-[#712d34] text-white py-3 rounded-full font-sans font-bold text-xs shadow-sm transition-all duration-200 mt-4 cursor-pointer text-center"
+                className="bg-[#f4949a] hover:bg-[#e3858b] text-white py-3 rounded-full font-sans font-bold text-xs shadow-sm transition-all duration-200 mt-4 cursor-pointer text-center"
               >
                 {modalMode === 'add' ? 'Crear Producto' : 'Guardar Cambios'}
               </button>

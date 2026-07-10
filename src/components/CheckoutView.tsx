@@ -94,7 +94,7 @@ export default function CheckoutView({
       {cartItems.length === 0 ? (
         /* Empty Cart State */
         <div id="empty-cart-state" className="flex flex-col items-center justify-center py-24 px-4 bg-white rounded-3xl border border-[#867273]/20 shadow-sm text-center max-w-xl mx-auto">
-          <ShoppingCart className="w-16 h-16 text-[#93474d]/30 mb-4 animate-bounce" />
+          <ShoppingCart className="w-16 h-16 text-[#f4949a]/30 mb-4 animate-bounce" />
           <h2 className="font-sans font-bold text-xl text-[#1b1c1c]">Tu Carrito está vacío</h2>
           <p className="text-xs text-[#867273] mt-2 leading-relaxed">
             Parece que aún no has agregado productos creativos a tu pedido. Explora nuestro catálogo de guirnaldas, piñatas, toppers y más.
@@ -102,7 +102,7 @@ export default function CheckoutView({
           <button
             id="empty-cart-back-btn"
             onClick={() => setActiveScreen('store')}
-            className="mt-6 px-6 py-2.5 bg-[#93474d] text-white text-xs font-bold rounded-full hover:bg-[#712d34] transition-all duration-200 shadow-sm cursor-pointer"
+            className="mt-6 px-6 py-2.5 bg-[#f4949a] text-white text-xs font-bold rounded-full hover:bg-[#e3858b] transition-all duration-200 shadow-sm cursor-pointer"
           >
             Ir a la Tienda
           </button>
@@ -117,7 +117,7 @@ export default function CheckoutView({
             {/* Cart List */}
             <section id="checkout-cart-list" className="bg-[#ffffff] rounded-2xl p-6 md:p-8 border border-[#867273]/20 shadow-sm text-left">
               <h2 className="font-sans font-bold text-lg text-[#1b1c1c] mb-6 flex items-center gap-2 border-b border-[#867273]/15 pb-4">
-                <ShoppingBag className="w-5 h-5 text-[#93474d]" />
+                <ShoppingBag className="w-5 h-5 text-[#f4949a]" />
                 Tu Carrito
               </h2>
 
@@ -147,7 +147,7 @@ export default function CheckoutView({
                           <button
                             id={`quantity-dec-${item.product.id}`}
                             onClick={() => updateQuantity(item.product.id, -1)}
-                            className="p-1 hover:text-[#93474d] rounded-full transition-colors cursor-pointer"
+                            className="p-1 hover:text-[#f4949a] rounded-full transition-colors cursor-pointer"
                             title="Disminuir"
                           >
                             <Minus className="w-3 h-3" />
@@ -158,7 +158,7 @@ export default function CheckoutView({
                           <button
                             id={`quantity-inc-${item.product.id}`}
                             onClick={() => updateQuantity(item.product.id, 1)}
-                            className="p-1 hover:text-[#93474d] rounded-full transition-colors cursor-pointer"
+                            className="p-1 hover:text-[#f4949a] rounded-full transition-colors cursor-pointer"
                             title="Aumentar"
                           >
                             <Plus className="w-3 h-3" />
@@ -190,7 +190,7 @@ export default function CheckoutView({
             {/* Shipping Info Form */}
             <section id="shipping-info-section" className="bg-[#ffffff] rounded-2xl p-6 md:p-8 border border-[#867273]/20 shadow-sm text-left">
               <h2 className="font-sans font-bold text-lg text-[#1b1c1c] mb-6 flex items-center gap-2 border-b border-[#867273]/15 pb-4">
-                <ShieldCheck className="w-5 h-5 text-[#93474d]" />
+                <ShieldCheck className="w-5 h-5 text-[#f4949a]" />
                 Información de Envío
               </h2>
 
@@ -309,7 +309,7 @@ export default function CheckoutView({
                 </div>
                 <div className="border-t border-[#867273]/10 pt-4 flex justify-between items-center font-sans font-bold text-base text-[#1b1c1c]">
                   <span>Total</span>
-                  <span className="text-[#93474d]">${total.toFixed(2)} ARS</span>
+                  <span className="text-[#f4949a]">${total.toFixed(2)} ARS</span>
                 </div>
               </div>
 
@@ -393,13 +393,13 @@ export default function CheckoutView({
               </div>
               <div className="border-t border-[#867273]/15 pt-3 flex justify-between items-center text-sm font-sans font-bold text-[#1b1c1c]">
                 <span>Total pagado:</span>
-                <span className="text-[#93474d] text-base">${createdOrder.total.toFixed(2)} ARS</span>
+                <span className="text-[#f4949a] text-base">${createdOrder.total.toFixed(2)} ARS</span>
               </div>
             </div>
 
             {/* Custom Thank you note */}
             <div className="text-xs text-[#867273] leading-relaxed px-2 flex gap-2 items-center justify-center">
-              <Ticket className="w-5 h-5 text-[#93474d] shrink-0" />
+              <Ticket className="w-5 h-5 text-[#f4949a] shrink-0" />
               <p>Tu orden ha sido guardada en estado **Pendiente** y ya puedes verla en el panel administrativo.</p>
             </div>
 
