@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { ShoppingBag, Trash2, Plus, Minus, ShieldCheck, Lock, CreditCard, ShoppingCart, CheckCircle2, Ticket } from 'lucide-react';
 import { CartItem, Order, Product } from '../types';
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+
+// Inicialización de Mercado Pago (reemplazar por tu clave pública en producción)
+initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "TEST-e613b194-e3fb-4632-84bc-21a4030616b7");
+
 
 interface CheckoutViewProps {
   cartItems: CartItem[];
@@ -27,11 +32,12 @@ export default function CheckoutView({
   const [city, setCity] = useState('');
   const [region, setRegion] = useState('Región Metropolitana');
   
-  // Simulated status
+  // Mercado Pago & Status State
   const [formErrors, setFormErrors] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
+  const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
   // Financial calculations
   const subtotal = cartItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
@@ -57,29 +63,60 @@ export default function CheckoutView({
 
     setFormErrors([]);
     setIsProcessing(true);
+    setPreferenceId(null); // Reset previous preference if form updated
 
-    // Simulate Mercado Pago Gateway delay
-    setTimeout(() => {
-      setIsProcessing(false);
-      
-      const newOrder: Order = {
-        id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
-        customerName: `${firstName} ${lastName}`,
+    const apiEndpoint = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://127.0.0.1:5001/alohaparty-ig/us-central1/createPreference'
+      : '/api/createPreference';
+
+    fetch(apiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        items: cartItems,
         email,
-        address,
-        city,
-        region,
-        items: [...cartItems],
-        total: parseFloat(total.toFixed(2)),
-        date: new Date().toISOString(),
-        status: 'pending'
-      };
+        firstName,
+        lastName
+      })
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error('Error al conectar con el servidor de pagos');
+      }
+      return res.json();
+    })
+    .then(data => {
+      setIsProcessing(false);
+      if (data.id) {
+        setPreferenceId(data.id);
+        
+        const newOrder: Order = {
+          id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+          customerName: `${firstName} ${lastName}`,
+          email,
+          address,
+          city,
+          region,
+          items: [...cartItems],
+          total: parseFloat(total.toFixed(2)),
+          date: new Date().toISOString(),
+          status: 'pending'
+        };
 
-      // Save order to store global state
-      placeOrder(newOrder);
-      setCreatedOrder(newOrder);
-      setShowReceiptModal(true);
-    }, 2000);
+        // Guardar la orden pendiente localmente
+        placeOrder(newOrder);
+        setCreatedOrder(newOrder);
+      } else {
+        setFormErrors(['Ocurrió un error al generar el link de pago de Mercado Pago.']);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      setIsProcessing(false);
+      setFormErrors(['Error de conexión con el backend. Por favor, asegúrese de tener configuradas sus credenciales.']);
+    });
   };
 
   const handleCloseReceiptModal = () => {
@@ -324,25 +361,31 @@ export default function CheckoutView({
                 </div>
               </div>
 
-              {/* Pay Button */}
-              <button
-                id="mercado-pago-pay-btn"
-                onClick={handleCheckoutSubmit}
-                disabled={isProcessing}
-                className="w-full bg-[#009EE3] hover:bg-[#008ACB] disabled:bg-[#009ee3]/50 text-white rounded-full py-4 px-6 flex items-center justify-center gap-3 transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-sm font-sans font-bold text-sm cursor-pointer disabled:cursor-not-allowed"
-              >
-                {isProcessing ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    <span>Procesando pago...</span>
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-4 h-4" />
-                    <span>Pagar con Mercado Pago</span>
-                  </>
-                )}
-              </button>
+              {/* Pay Button / Mercado Pago SDK Widget */}
+              {preferenceId ? (
+                <div id="mp-wallet-container" className="w-full">
+                  <Wallet initialization={{ preferenceId: preferenceId }} customization={{ texts: { valueProp: 'smart_option' } }} />
+                </div>
+              ) : (
+                <button
+                  id="mercado-pago-pay-btn"
+                  onClick={handleCheckoutSubmit}
+                  disabled={isProcessing}
+                  className="w-full bg-[#f4949a] hover:bg-[#e3858b] disabled:bg-[#f4949a]/50 text-white rounded-full py-4 px-6 flex items-center justify-center gap-3 transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-sm font-sans font-bold text-sm cursor-pointer disabled:cursor-not-allowed"
+                >
+                  {isProcessing ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      <span>Preparando pago...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-4 h-4" />
+                      <span>Confirmar datos de envío</span>
+                    </>
+                  )}
+                </button>
+              )}
 
               <div id="accepted-cards-info" className="flex justify-center gap-2 items-center text-[#867273] text-[11px] font-semibold mt-1">
                 <CreditCard className="w-4 h-4" />
