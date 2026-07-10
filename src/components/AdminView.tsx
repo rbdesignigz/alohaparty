@@ -20,7 +20,7 @@ import {
   ArrowRightLeft,
   UploadCloud
 } from 'lucide-react';
-import { Product, Order, User } from '../types';
+import { Product, Order, User, Category } from '../types';
 import { doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebase';
@@ -29,6 +29,7 @@ import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_USERS } from '../data';
 interface AdminViewProps {
   products: Product[];
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  categories: Category[];
   orders: Order[];
   setOrders: React.Dispatch<React.SetStateAction<Order[]>>;
   users: User[];
@@ -36,11 +37,12 @@ interface AdminViewProps {
   setActiveScreen: (screen: 'store' | 'admin' | 'checkout' | 'login') => void;
 }
 
-type AdminTab = 'dashboard' | 'products' | 'users' | 'orders' | 'settings';
+type AdminTab = 'dashboard' | 'categories' | 'products' | 'users' | 'orders' | 'settings';
 
 export default function AdminView({
   products,
   setProducts,
+  categories,
   orders,
   setOrders,
   users,
@@ -98,17 +100,11 @@ export default function AdminView({
     return orders.filter(o => o.status !== 'delivered').length;
   }, [orders]);
 
-  // Categories list
-  const categories = [
-    'Cake Toppers',
-    'Piñatas Mini',
-    'Tarjetas Personalizadas',
-    'Banderines y Guirnaldas',
-    'Cajitas Dulceras',
-    'Notebooks',
-    'Washi Tape',
-    'Stickers'
-  ];
+  // Form states for Category adding/editing
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [categoryModalMode, setCategoryModalMode] = useState<'add' | 'edit'>('add');
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [formCategoryName, setFormCategoryName] = useState('');
 
   // Filtered Products for the table
   const filteredProducts = useMemo(() => {
@@ -161,7 +157,7 @@ export default function AdminView({
     setModalMode('add');
     setEditingProduct(null);
     setFormName('');
-    setFormCategory('Cake Toppers');
+    setFormCategory(categories.length > 0 ? categories[0].name : '');
     setFormPrice('');
     setFormStock('');
     setFormDescription('');
@@ -261,6 +257,65 @@ export default function AdminView({
       alert('Error cambiando el rol del usuario');
     }
   };
+  // Category handlers
+  const handleOpenAddCategoryModal = () => {
+    setCategoryModalMode('add');
+    setEditingCategory(null);
+    setFormCategoryName('');
+    setShowCategoryModal(true);
+  };
+
+  const handleOpenEditCategoryModal = (cat: Category) => {
+    setCategoryModalMode('edit');
+    setEditingCategory(cat);
+    setFormCategoryName(cat.name);
+    setShowCategoryModal(true);
+  };
+
+  const handleCategorySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formCategoryName.trim()) return;
+
+    if (categoryModalMode === 'edit' && editingCategory) {
+      try {
+        const oldName = editingCategory.name;
+        const newName = formCategoryName.trim();
+        await updateDoc(doc(db, 'categories', editingCategory.id), { name: newName });
+        
+        if (oldName !== newName) {
+           const productsToUpdate = products.filter(p => p.category === oldName);
+           for (const p of productsToUpdate) {
+             await updateDoc(doc(db, 'products', p.id), { category: newName });
+           }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      try {
+        const newId = `cat_${Date.now()}`;
+        await setDoc(doc(db, 'categories', newId), { name: formCategoryName.trim() });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    setShowCategoryModal(false);
+  };
+
+  const handleDeleteCategory = async (cat: Category) => {
+    const isUsed = products.some(p => p.category === cat.name);
+    if (isUsed) {
+      alert(`No puedes eliminar la categoría "${cat.name}" porque hay productos que la usan. Por favor, reasigna esos productos primero.`);
+      return;
+    }
+    if (window.confirm(`¿Estás seguro de que quieres eliminar la categoría "${cat.name}"?`)) {
+      try {
+        await deleteDoc(doc(db, 'categories', cat.id));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
 
   return (
     <div id="admin-backoffice" className="min-h-screen bg-[#fbf9f8] flex flex-col md:flex-row relative">
@@ -300,6 +355,22 @@ export default function AdminView({
             >
               <LayoutDashboard className="w-4 h-4" />
               <span>Dashboard</span>
+            </button>
+          </li>
+
+          {/* Categories */}
+          <li>
+            <button
+              id="sidebar-tab-categories"
+              onClick={() => setActiveTab('categories')}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === 'categories'
+                  ? 'bg-[#cce8bd] text-[#364d2d] shadow-xs translate-x-1'
+                  : 'text-[#867273] hover:bg-[#efeded] hover:text-[#93474d]'
+              }`}
+            >
+              <FolderPlus className="w-4 h-4" />
+              <span>Categorías</span>
             </button>
           </li>
 
@@ -396,6 +467,62 @@ export default function AdminView({
       {/* Main Backoffice Content Container */}
       <main id="admin-main-content" className="flex-grow md:ml-64 p-6 md:p-12 max-w-7xl w-full mx-auto">
         
+        {/* TAB 0: CATEGORIES CRUD */}
+        {activeTab === 'categories' && (
+          <div id="tab-content-categories" className="flex flex-col gap-8 animate-fade-in">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-left">
+              <div>
+                <h2 className="text-2xl font-sans font-bold text-[#1b1c1c] tracking-tight">Product Categories</h2>
+                <p className="text-xs text-[#867273] mt-1">Manage dynamic categories for your creative stationery catalog.</p>
+              </div>
+              <button
+                onClick={handleOpenAddCategoryModal}
+                className="bg-[#93474d] hover:bg-[#712d34] text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-sm hover:-translate-y-0.5 transition-all flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span>New Category</span>
+              </button>
+            </div>
+
+            {/* Categories Table */}
+            <div className="bg-white rounded-2xl border border-[#867273]/20 shadow-xs overflow-hidden">
+              <div className="grid grid-cols-12 gap-4 p-4 border-b border-[#867273]/15 bg-[#fbf9f8] text-[10px] font-bold text-[#867273] uppercase tracking-wider hidden sm:grid">
+                <div className="col-span-8">Category Name</div>
+                <div className="col-span-4 text-right">Actions</div>
+              </div>
+              
+              {categories.length === 0 ? (
+                <div className="p-8 text-center text-xs text-[#867273]">No hay categorías registradas.</div>
+              ) : (
+                <div className="divide-y divide-[#867273]/10">
+                  {categories.map((cat) => (
+                    <div key={cat.id} className="grid grid-cols-1 sm:grid-cols-12 gap-4 p-4 items-center hover:bg-[#fbf9f8]/50 transition-colors">
+                      <div className="col-span-8 font-bold text-sm text-[#1b1c1c]">{cat.name}</div>
+                      <div className="col-span-4 flex justify-end gap-2">
+                        <button
+                          onClick={() => handleOpenEditCategoryModal(cat)}
+                          className="p-1.5 text-[#867273] hover:text-[#4d6543] hover:bg-[#4d6543]/10 rounded-lg transition-colors cursor-pointer"
+                          title="Editar Categoría"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteCategory(cat)}
+                          className="p-1.5 text-[#867273] hover:text-[#ba1a1a] hover:bg-[#ba1a1a]/10 rounded-lg transition-colors cursor-pointer"
+                          title="Eliminar Categoría"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* TAB 1: PRODUCT LISTING & CRUD (Active by default) */}
         {activeTab === 'products' && (
           <div id="tab-content-products" className="flex flex-col gap-8 animate-fade-in">
@@ -917,8 +1044,9 @@ export default function AdminView({
                     onChange={(e) => setFormCategory(e.target.value)}
                     className="bg-[#fbf9f8] border border-[#867273]/30 focus:border-[#4d6543] rounded-xl px-4 py-2 text-xs outline-none cursor-pointer"
                   >
+                    {categories.length === 0 && <option value="">Sin categorías</option>}
                     {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat.id} value={cat.name}>{cat.name}</option>
                     ))}
                   </select>
                 </div>
@@ -1008,6 +1136,59 @@ export default function AdminView({
                 {modalMode === 'add' ? 'Crear Producto' : 'Guardar Cambios'}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* CATEGORY MODAL */}
+      {showCategoryModal && (
+        <div id="category-crud-modal" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1b1c1c]/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            
+            <div className="flex justify-between items-center p-6 border-b border-[#867273]/15 bg-[#fbf9f8]">
+              <h3 className="font-sans font-bold text-lg text-[#1b1c1c]">
+                {categoryModalMode === 'add' ? 'Nueva Categoría' : 'Editar Categoría'}
+              </h3>
+              <button 
+                onClick={() => setShowCategoryModal(false)}
+                className="p-1.5 rounded-full hover:bg-[#e4dfde] text-[#867273] transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-grow">
+              <form id="category-form" onSubmit={handleCategorySubmit} className="flex flex-col gap-4 text-left">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-[#534343]">Nombre de la Categoría *</label>
+                  <input
+                    type="text"
+                    placeholder="Ej. Cake Toppers"
+                    value={formCategoryName}
+                    onChange={(e) => setFormCategoryName(e.target.value)}
+                    required
+                    className="bg-[#fbf9f8] border border-[#867273]/30 focus:border-[#4d6543] rounded-xl px-4 py-2 text-xs outline-none"
+                  />
+                </div>
+              </form>
+            </div>
+
+            <div className="p-6 border-t border-[#867273]/15 bg-[#fbf9f8] flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowCategoryModal(false)}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-[#534343] hover:bg-[#e4dfde] transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                form="category-form"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#4d6543] hover:bg-[#364d2d] text-white shadow-sm transition-colors cursor-pointer"
+              >
+                {categoryModalMode === 'add' ? 'Guardar Categoría' : 'Actualizar Categoría'}
+              </button>
+            </div>
           </div>
         </div>
       )}

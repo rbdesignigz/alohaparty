@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, X, Check } from 'lucide-react';
-import { ActiveScreen, Product, CartItem, Order, User } from './types';
+import { ActiveScreen, Product, CartItem, Order, User, Category } from './types';
 import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_USERS } from './data';
 import { useEffect } from 'react';
 import { collection, onSnapshot, doc, setDoc } from 'firebase/firestore';
@@ -20,6 +20,7 @@ export default function App() {
 
   // Database State
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -29,6 +30,9 @@ export default function App() {
     const unsubProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
       setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
     });
+    const unsubCategories = onSnapshot(collection(db, 'categories'), (snapshot) => {
+      setCategories(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Category)).sort((a, b) => a.name.localeCompare(b.name)));
+    });
     const unsubOrders = onSnapshot(collection(db, 'orders'), (snapshot) => {
       setOrders(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order)).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
     });
@@ -37,6 +41,7 @@ export default function App() {
     });
     return () => {
       unsubProducts();
+      unsubCategories();
       unsubOrders();
       unsubUsers();
     };
@@ -151,6 +156,7 @@ export default function App() {
         {activeScreen === 'store' && (
           <StoreView
             products={products}
+            categories={categories}
             addToCart={addToCart}
             searchQuery={searchQuery}
           />
@@ -173,6 +179,7 @@ export default function App() {
           <AdminView
             products={products}
             setProducts={setProducts}
+            categories={categories}
             orders={orders}
             setOrders={setOrders}
             users={users}

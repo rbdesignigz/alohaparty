@@ -1,14 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { ShoppingCart, Star, Sparkles, Filter, ChevronLeft, ChevronRight, SlidersHorizontal, Info } from 'lucide-react';
-import { Product } from '../types';
+import { Product, Category } from '../types';
 
 interface StoreViewProps {
   products: Product[];
+  categories: Category[];
   addToCart: (product: Product) => void;
   searchQuery: string;
 }
 
-export default function StoreView({ products, addToCart, searchQuery }: StoreViewProps) {
+export default function StoreView({ products, categories: dynamicCategories, addToCart, searchQuery }: StoreViewProps) {
   // Sidebar states
   const [selectedCategories, setSelectedCategories] = useState<string[]>(['Todos']);
   const [maxPrice, setMaxPrice] = useState<number>(100000);
@@ -16,18 +17,10 @@ export default function StoreView({ products, addToCart, searchQuery }: StoreVie
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
 
-  // Available categories
-  const categories = [
-    'Todos',
-    'Cake Toppers',
-    'Piñatas Mini',
-    'Tarjetas Personalizadas',
-    'Banderines y Guirnaldas',
-    'Cajitas Dulceras',
-    'Notebooks',
-    'Washi Tape',
-    'Stickers'
-  ];
+  // Available categories (combining 'Todos' with dynamic categories from Firebase)
+  const categories = useMemo(() => {
+    return ['Todos', ...dynamicCategories.map(c => c.name)];
+  }, [dynamicCategories]);
 
   // Handle Category selection
   const handleCategoryChange = (category: string) => {
