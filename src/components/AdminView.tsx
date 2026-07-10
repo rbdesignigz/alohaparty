@@ -17,11 +17,13 @@ import {
   DollarSign,
   Ship,
   Sparkles,
-  ArrowRightLeft
+  ArrowRightLeft,
+  UploadCloud
 } from 'lucide-react';
 import { Product, Order, User } from '../types';
 import { doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../firebase';
 import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_USERS } from '../data';
 
 interface AdminViewProps {
@@ -65,6 +67,25 @@ export default function AdminView({
   const [formStock, setFormStock] = useState('');
   const [formDescription, setFormDescription] = useState('');
   const [formImage, setFormImage] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      setFormImage(downloadURL);
+    } catch (error) {
+      console.error("Error uploading image: ", error);
+      alert('Error al subir la imagen. Comprueba las reglas de Storage o tu conexión.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // Stats calculation
   const totalProductsCount = products.length;
@@ -887,7 +908,7 @@ export default function AdminView({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-bold text-[#534343]">Categoría *</label>
                   <select
@@ -915,11 +936,9 @@ export default function AdminView({
                     className="bg-[#fbf9f8] border border-[#867273]/30 focus:border-[#4d6543] rounded-xl px-4 py-2 text-xs outline-none"
                   />
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#534343]">Stock Disponible *</label>
+                  <label className="text-xs font-bold text-[#534343]">Stock *</label>
                   <input
                     id="modal-product-stock"
                     type="number"
@@ -930,17 +949,42 @@ export default function AdminView({
                     className="bg-[#fbf9f8] border border-[#867273]/30 focus:border-[#4d6543] rounded-xl px-4 py-2 text-xs outline-none"
                   />
                 </div>
+              </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#534343]">URL Imagen del Producto</label>
-                  <input
-                    id="modal-product-image"
-                    type="text"
-                    placeholder="https://images.unsplash.com/..."
-                    value={formImage}
-                    onChange={(e) => setFormImage(e.target.value)}
-                    className="bg-[#fbf9f8] border border-[#867273]/30 focus:border-[#4d6543] rounded-xl px-4 py-2 text-xs outline-none"
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-[#534343]">Imagen del Producto *</label>
+                <div className="relative border-2 border-dashed border-[#867273]/30 rounded-xl p-6 text-center hover:bg-[#fbf9f8] transition-colors group cursor-pointer overflow-hidden bg-white">
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={isUploading}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
                   />
+                  
+                  {isUploading ? (
+                    <div className="flex flex-col items-center justify-center gap-2 h-full py-4">
+                      <div className="w-6 h-6 border-2 border-[#4d6543] border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-xs font-bold text-[#4d6543]">Subiendo imagen...</span>
+                    </div>
+                  ) : formImage ? (
+                    <div className="flex flex-col items-center gap-3">
+                      <img src={formImage} alt="Preview" className="h-32 object-contain rounded-lg border border-[#867273]/20" />
+                      <span className="text-[10px] font-bold text-[#867273] underline group-hover:text-[#93474d] relative z-0">
+                        Haz clic o arrastra para cambiar la imagen
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 py-4">
+                      <div className="w-10 h-10 rounded-full bg-[#fbf9f8] flex items-center justify-center text-[#867273] group-hover:text-[#93474d] group-hover:bg-[#ffdada]/30 transition-colors">
+                        <UploadCloud className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-[#1b1c1c]">Sube o arrastra una imagen</p>
+                        <p className="text-[10px] text-[#867273]">PNG, JPG o WEBP</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
