@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Heart, Leaf, Sparkles } from 'lucide-react';
+import { ArrowRight, Heart, Sparkles } from 'lucide-react';
 import { ActiveScreen } from '../types';
 
 interface HomeViewProps {
@@ -15,7 +15,7 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
         {/* Decorative Background Elements */}
         <div className="absolute top-0 right-0 w-1/2 h-full bg-[#8da77b]/5 rounded-bl-[100px] -z-10"></div>
         <div className="absolute -left-20 top-20 text-[#f4949a] opacity-10">
-          <Leaf className="w-64 h-64 -rotate-45" />
+          <img src="/hoja.png" alt="Hoja" className="w-64 h-64 -rotate-45" />
         </div>
 
         {/* Left Content */}
@@ -113,7 +113,7 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
           <span className="font-script text-[#f4949a] text-4xl md:text-5xl -mt-2 transform -rotate-1">que quedan para siempre</span>
         </h2>
         <div className="absolute bottom-4 right-10 md:right-1/4 text-[#8da77b] opacity-20">
-          <Leaf className="w-16 h-16" />
+          <img src="/hoja.png" alt="Hoja" className="w-16 h-16" />
         </div>
       </section>
 
@@ -172,6 +172,7 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
             </div>
           </div>
         </div>
+        </div>
       </section>
 
       {/* Nuestra Historia Section */}
@@ -179,7 +180,7 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
         {/* Decorative elements */}
         <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-[#f4949a]/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-10 left-10 text-[#8da77b] opacity-20">
-           <Leaf className="w-32 h-32 -rotate-45" />
+           <img src="/hoja.png" alt="Hoja" className="w-32 h-32 -rotate-45" />
         </div>
         
         <div className="w-full lg:max-w-[60vw] flex flex-col md:flex-row items-center gap-16 z-10">
@@ -210,6 +211,7 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
           >
             <Heart className="w-4 h-4" /> Conoce al equipo
           </button>
+          </div>
         </div>
       </section>
     </div>
