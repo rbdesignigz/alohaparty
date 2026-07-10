@@ -38,8 +38,9 @@ export default function Header({
         className="flex items-center gap-3 cursor-pointer group" 
         onClick={() => { setActiveScreen('home'); setSearchQuery(''); }}
       >
-        <div className="w-12 h-12 overflow-hidden rounded-full border-2 border-white shadow-sm group-hover:scale-105 transition-transform duration-300 bg-[#f4949a] flex items-center justify-center shrink-0">
-           <img src="/logo.png" alt="Aloha Party Logo" className="w-full h-full object-cover" onError={(e) => {
+        <div className="w-12 h-12 overflow-hidden rounded-full border-2 border-white shadow-sm group-hover:scale-105 transition-transform duration-300 bg-[#f4949a] flex items-center justify-center shrink-0 relative">
+           <span className="text-white font-bold text-sm absolute">AP</span>
+           <img src="/logo.png" alt="Aloha Party Logo" className="w-full h-full object-cover relative z-10" onError={(e) => {
              e.currentTarget.style.display = 'none';
              e.currentTarget.parentElement?.classList.add('fallback-logo');
            }} />
@@ -191,7 +192,7 @@ export default function Header({
 
       {/* Mobile Fullscreen Menu */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 top-[80px] bg-[#fbf9f8] z-40 flex flex-col items-center pt-10 gap-8 md:hidden animate-fade-in border-t border-[#867273]/10">
+        <div className="fixed inset-0 top-[60px] bg-white z-50 flex flex-col items-center pt-10 gap-8 md:hidden animate-fade-in border-t border-[#867273]/10">
           <button
             onClick={() => closeMobileMenuAndNavigate('home')}
             className={`text-2xl font-bold ${activeScreen === 'home' ? 'text-[#93474d]' : 'text-[#867273]'}`}
