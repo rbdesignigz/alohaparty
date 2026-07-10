@@ -42,17 +42,8 @@ export default function App() {
     };
   }, []);
 
-  // Cart State (Pre-filled with mockup 3 items for instant high-fidelity demonstration)
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      product: INITIAL_PRODUCTS[5], // Banderín Personalizado "Tropical" (id: '6')
-      quantity: 1
-    },
-    {
-      product: INITIAL_PRODUCTS[6], // Cajitas Dulceras (Pack 10) (id: '7')
-      quantity: 2
-    }
-  ]);
+  // Cart State (Starts empty)
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   // Global search query
   const [searchQuery, setSearchQuery] = useState('');
