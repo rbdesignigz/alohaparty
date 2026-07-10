@@ -471,8 +471,12 @@ export default function CheckoutView({
               <span className="w-16 h-16 bg-[#cce8bd] text-[#4d6543] rounded-full flex items-center justify-center mb-4 shadow-sm">
                 <CheckCircle2 className="w-10 h-10" />
               </span>
-              <h3 className="font-sans font-bold text-xl text-[#1b1c1c]">¡Pago Exitoso!</h3>
-              <p className="text-xs text-[#4d6543] font-semibold mt-1">Procesado con Mercado Pago</p>
+              <h3 className="font-sans font-bold text-xl text-[#1b1c1c]">
+                {deliveryMethod === 'pickup' ? '¡Pedido Confirmado!' : '¡Pago Exitoso!'}
+              </h3>
+              <p className="text-xs text-[#4d6543] font-semibold mt-1">
+                {deliveryMethod === 'pickup' ? 'Simulado para pruebas (Pago en sucursal)' : 'Procesado con Mercado Pago'}
+              </p>
             </div>
 
             {/* Receipt Info details block */}
@@ -501,7 +505,7 @@ export default function CheckoutView({
                 </div>
               </div>
               <div className="border-t border-[#867273]/15 pt-3 flex justify-between items-center text-sm font-sans font-bold text-[#1b1c1c]">
-                <span>Total pagado:</span>
+                <span>{deliveryMethod === 'pickup' ? 'Total a pagar:' : 'Total pagado:'}</span>
                 <span className="text-[#f4949a] text-base">${createdOrder.total.toFixed(2)} ARS</span>
               </div>
             </div>
