@@ -14,7 +14,7 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
         
         {/* Decorative Background Elements */}
         <div className="absolute top-0 right-0 w-1/2 h-full bg-[#8da77b]/5 rounded-bl-[100px] -z-10"></div>
-        <div className="absolute -left-20 top-20 text-[#f4949a] opacity-10">
+        <div className="absolute left-2 md:left-6 top-20 text-[#f4949a] opacity-10">
           <img src="/hoja.png" alt="Hoja" className="w-64 h-64 -rotate-45" />
         </div>
 
@@ -28,7 +28,7 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
               momentos únicos
             </span>
             {/* Hand-drawn heart accent */}
-            <div className="absolute top-0 right-10 md:right-32 text-[#f4949a] opacity-60">
+            <div className="absolute top-0 md:-top-10 right-10 md:right-32 text-[#f4949a] opacity-60">
               <Heart className="w-12 h-12 stroke-[1.5]" fill="transparent" />
             </div>
           </h1>
