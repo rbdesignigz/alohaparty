@@ -28,15 +28,18 @@ export default function Header({
       {/* Brand Logo */}
       <div 
         id="header-logo-container"
-        className="flex items-center gap-2 cursor-pointer group" 
+        className="flex items-center gap-3 cursor-pointer group" 
         onClick={() => { setActiveScreen('home'); setSearchQuery(''); }}
       >
-        <span className="p-2 bg-[#93474d]/10 text-[#93474d] rounded-full group-hover:scale-110 transition-transform duration-300">
-          <PartyPopper className="w-6 h-6" />
-        </span>
+        <div className="w-12 h-12 overflow-hidden rounded-full border-2 border-white shadow-sm group-hover:scale-105 transition-transform duration-300 bg-[#f4949a] flex items-center justify-center shrink-0">
+           <img src="/logo.png" alt="Aloha Party Logo" className="w-full h-full object-cover" onError={(e) => {
+             e.currentTarget.style.display = 'none';
+             e.currentTarget.parentElement?.classList.add('fallback-logo');
+           }} />
+        </div>
         <div>
-          <span className="font-sans font-bold text-xl tracking-tight text-[#93474d]">Aloha Party</span>
-          <p className="text-[9px] uppercase tracking-widest text-[#867273] font-semibold -mt-1">Papelería Creativa</p>
+          <span className="font-sans font-bold text-xl tracking-tight text-[#f4949a]">Aloha Party</span>
+          <p className="text-[9px] uppercase tracking-widest text-[#8da77b] font-bold -mt-1">Papelería Creativa</p>
         </div>
       </div>
 

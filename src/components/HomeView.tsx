@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Heart } from 'lucide-react';
+import { ArrowRight, Heart, Leaf, Sparkles } from 'lucide-react';
 import { ActiveScreen } from '../types';
 
 interface HomeViewProps {
@@ -10,40 +10,56 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
   return (
     <div id="home-view" className="flex flex-col w-full">
       {/* Hero Section */}
-      <section className="w-full bg-[#fbf9f8] px-6 md:px-12 py-12 md:py-24 flex flex-col md:flex-row items-center gap-12">
-        <div className="flex-1 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#d8eed4] text-[#4d6543] rounded-full text-xs font-semibold">
-            <span className="w-1.5 h-1.5 bg-[#4d6543] rounded-full"></span>
-            Papelería Creativa & Diseño
+      <section className="w-full bg-[#f4949a] relative overflow-hidden px-6 md:px-12 py-16 md:py-32 flex flex-col md:flex-row items-center gap-12">
+        {/* Animated Tropical Leaves */}
+        <div className="absolute -top-10 -left-10 text-[#8da77b] opacity-40 animate-[spin_12s_linear_infinite]">
+          <Leaf className="w-40 h-40" />
+        </div>
+        <div className="absolute -bottom-16 right-10 text-[#8da77b] opacity-50 animate-[bounce_5s_ease-in-out_infinite]">
+          <Leaf className="w-48 h-48 rotate-45" />
+        </div>
+        <div className="absolute top-1/4 right-1/3 text-[#8da77b] opacity-30 animate-[pulse_4s_ease-in-out_infinite]">
+          <Leaf className="w-20 h-20 -rotate-90" />
+        </div>
+        <div className="absolute top-1/2 left-1/3 text-[#8da77b] opacity-20 animate-[bounce_6s_ease-in-out_infinite]">
+          <Sparkles className="w-12 h-12" />
+        </div>
+
+        <div className="flex-1 space-y-6 z-10 relative">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/20 backdrop-blur-sm text-white rounded-full text-xs font-bold border border-white/30 shadow-sm uppercase tracking-wider">
+            <Heart className="w-3.5 h-3.5 fill-white" />
+            Papelería Creativa
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-[#1b1c1c] leading-tight tracking-tight">
-            Detalles únicos para momentos <span className="text-[#93474d]">inolvidables</span>.
+          <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-[1.1] tracking-tight drop-shadow-sm">
+            Detalles únicos para <br />
+            momentos <span className="text-[#8da77b] bg-white px-2 rounded-2xl inline-block -rotate-2 transform hover:rotate-0 transition-transform">inolvidables</span>
           </h1>
-          <p className="text-[#867273] text-sm md:text-base max-w-md leading-relaxed">
-            Especialistas en decoración artesanal para tus celebraciones. Creamos toppers, piñatas personalizadas, banderines y papelería con amor y dedicación.
+          <p className="text-white/90 text-lg md:text-xl max-w-lg leading-relaxed font-medium">
+            ¡Dale vida a tus fiestas! Creamos toppers, piñatas personalizadas, banderines y papelería con amor, full color y mucho diseño tropical.
           </p>
-          <div className="flex items-center gap-4 pt-4">
+          <div className="flex flex-wrap items-center gap-4 pt-6">
             <button
               onClick={() => setActiveScreen('store')}
-              className="flex items-center gap-2 bg-[#f0a8ae] hover:bg-[#eb969d] text-[#1b1c1c] px-6 py-3 rounded-full font-semibold transition-colors text-sm"
+              className="flex items-center gap-2 bg-[#8da77b] hover:bg-[#7a936a] text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-base group"
             >
-              Ir a la Tienda <ArrowRight className="w-4 h-4" />
+              Ir a la Tienda <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
             <button
-              onClick={() => setActiveScreen('store')}
-              className="border border-[#867273]/30 hover:border-[#93474d] text-[#1b1c1c] px-6 py-3 rounded-full font-semibold transition-colors text-sm"
+              onClick={() => setActiveScreen('about')}
+              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm border-2 border-white/50 text-white px-8 py-4 rounded-full font-bold transition-all text-base"
             >
-              Ver Galería
+              Conócenos
             </button>
           </div>
         </div>
-        <div className="flex-1 w-full max-w-lg relative">
-          <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl relative">
+        <div className="flex-1 w-full max-w-lg relative z-10">
+          <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl relative border-8 border-white/20 transform rotate-3 hover:rotate-0 transition-transform duration-500">
             <img 
               src="/hero.png" 
-              alt="Herramientas de Papelería y Diseño" 
+              alt="Aloha Party Designs" 
               className="w-full h-full object-cover"
             />
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#f4949a]/40 to-transparent mix-blend-overlay pointer-events-none"></div>
           </div>
         </div>
       </section>
@@ -105,32 +121,37 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
       </section>
 
       {/* Nuestra Historia Section */}
-      <section className="w-full bg-[#fbf9f8] px-6 md:px-12 py-24 flex flex-col md:flex-row items-center gap-16 relative overflow-hidden">
-        {/* Decorative blur circle */}
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-[#f0a8ae]/20 rounded-full blur-3xl pointer-events-none"></div>
+      <section className="w-full bg-white px-6 md:px-12 py-24 flex flex-col md:flex-row items-center gap-16 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-[#f4949a]/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-10 left-10 text-[#8da77b] opacity-20">
+           <Leaf className="w-32 h-32 -rotate-45" />
+        </div>
         
         <div className="flex-1 flex justify-center z-10">
-          <div className="w-[80%] max-w-[400px] aspect-square rounded-full overflow-hidden shadow-xl border-8 border-white">
+          <div className="w-[80%] max-w-[400px] aspect-square rounded-[3rem] overflow-hidden shadow-xl border-8 border-[#f4949a]/20 transform -rotate-3">
             <img src="/history.png" alt="Nuestra Historia" className="w-full h-full object-cover" />
           </div>
         </div>
         
         <div className="flex-1 space-y-6 z-10">
-          <p className="text-[#4d6543] font-bold text-xs tracking-widest uppercase">NUESTRA HISTORIA</p>
-          <h2 className="text-3xl md:text-5xl font-bold text-[#1b1c1c] leading-tight">
-            Pasión por el detalle en cada doblez.
+          <p className="text-[#8da77b] font-bold text-sm tracking-widest uppercase flex items-center gap-2">
+            <Sparkles className="w-4 h-4" /> NUESTRA HISTORIA
+          </p>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-[#f4949a] leading-tight tracking-tight">
+            Pasión por el detalle en cada fiesta.
           </h2>
-          <div className="space-y-4 text-[#867273] text-sm leading-relaxed">
+          <div className="space-y-4 text-[#867273] text-lg leading-relaxed font-medium">
             <p>
-              En Aloha Party creemos que las celebraciones merecen ser tan únicas como las personas que las festejan. Nuestra <strong>Papelería Creativa</strong> nace del amor por el diseño, el papel de alta calidad y el trabajo artesanal meticuloso.
+              En <strong>Aloha Party</strong> creemos que las celebraciones merecen ser tan únicas y divertidas como las personas que las festejan. Nuestra Papelería Creativa nace del amor por el color, el diseño tropical y las ganas de festejar a lo grande.
             </p>
             <p>
-              Cada topper, cada banderín y cada piñata es concebida como una pequeña obra de arte, diseñada a medida para aportar calidez, alegría y estilo a tus eventos. No hacemos productos en serie; creamos recuerdos palpables.
+              Cada topper, cada banderín y cada piñata es diseñada con un espíritu juvenil, relajado y lleno de buena vibra. ¡Queremos que tus fotos queden increíbles y tus invitados se enamoren de cada detalle!
             </p>
           </div>
           <button 
             onClick={() => setActiveScreen('about')}
-            className="flex items-center gap-2 text-[#93474d] font-semibold text-sm hover:text-[#712d34] transition-colors pt-4"
+            className="flex items-center gap-2 text-white bg-[#f4949a] hover:bg-[#e3858b] px-6 py-3 rounded-full font-bold transition-all shadow-md mt-4 hover:-translate-y-1"
           >
             <Heart className="w-4 h-4" /> Conoce al equipo
           </button>
