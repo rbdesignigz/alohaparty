@@ -192,7 +192,7 @@ export default function Header({
 
       {/* Mobile Fullscreen Menu */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 top-[60px] bg-white z-50 flex flex-col items-center pt-10 gap-8 md:hidden animate-fade-in border-t border-[#867273]/10">
+        <div className="absolute top-full left-0 w-full h-screen bg-white flex flex-col items-center pt-10 gap-8 md:hidden animate-fade-in border-t border-[#867273]/10" style={{ height: '100vh' }}>
           <button
             onClick={() => closeMobileMenuAndNavigate('home')}
             className={`text-2xl font-bold ${activeScreen === 'home' ? 'text-[#93474d]' : 'text-[#867273]'}`}
