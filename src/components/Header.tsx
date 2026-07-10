@@ -40,7 +40,7 @@ export default function Header({
       >
         <div className="w-12 h-12 overflow-hidden rounded-full border-2 border-white shadow-sm group-hover:scale-105 transition-transform duration-300 bg-[#f4949a] flex items-center justify-center shrink-0 relative">
            <span className="text-white font-bold text-sm absolute">AP</span>
-           <img src="/logo.png" alt="Aloha Party Logo" className="w-full h-full object-cover relative z-10" onError={(e) => {
+           <img src="/logo.png?v=2" alt="Aloha Party Logo" className="w-full h-full object-cover relative z-10" onError={(e) => {
              e.currentTarget.style.display = 'none';
              e.currentTarget.parentElement?.classList.add('fallback-logo');
            }} />
