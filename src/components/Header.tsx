@@ -31,25 +31,31 @@ export default function Header({
   };
 
   return (
-    <header id="store-header" className="w-full bg-[#fbf9f8] border-b border-[#867273]/20 py-3 md:py-4 px-4 md:px-12 flex flex-row gap-2 justify-between items-center sticky top-0 z-40 backdrop-blur-md bg-opacity-95">
-      {/* Brand Logo */}
-      <div 
-        id="header-logo-container"
-        className="flex items-center gap-3 cursor-pointer group" 
-        onClick={() => { setActiveScreen('home'); setSearchQuery(''); }}
-      >
-        <div className="w-12 h-12 overflow-hidden rounded-full border-2 border-white shadow-sm group-hover:scale-105 transition-transform duration-300 bg-[#f4949a] flex items-center justify-center shrink-0 relative">
-           <span className="text-white font-bold text-sm absolute">AP</span>
-           <img src="/logo.png?v=2" alt="Aloha Party Logo" className="w-full h-full object-cover relative z-10" onError={(e) => {
-             e.currentTarget.style.display = 'none';
-             e.currentTarget.parentElement?.classList.add('fallback-logo');
-           }} />
-        </div>
-        <div>
-          <span className="font-sans font-bold text-xl tracking-tight text-[#f4949a]">Aloha Party</span>
-          <p className="text-[9px] uppercase tracking-widest text-[#8da77b] font-bold -mt-1">Papelería Creativa</p>
-        </div>
+    <header id="store-header" className="w-full sticky top-0 z-40 flex flex-col shadow-sm">
+      {/* Announcement Bar */}
+      <div className="w-full bg-[#8da77b] text-white text-[10px] md:text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 tracking-widest uppercase shadow-inner">
+        <span>♥</span> Papelería personalizada para momentos inolvidables <span>♥</span>
       </div>
+
+      <div className="w-full bg-[#fbf9f8] border-b border-[#867273]/20 py-3 md:py-4 px-4 md:px-12 flex flex-row gap-4 justify-between items-center backdrop-blur-md bg-opacity-95">
+        {/* Brand Logo */}
+        <div 
+          id="header-logo-container"
+          className="flex items-center gap-3 cursor-pointer group shrink-0" 
+          onClick={() => { setActiveScreen('home'); setSearchQuery(''); }}
+        >
+          <div className="w-14 h-14 md:w-16 md:h-16 overflow-hidden rounded-full border-4 border-white shadow-md group-hover:scale-105 transition-transform duration-300 bg-[#fbf9f8] flex items-center justify-center relative">
+             <span className="text-[#8da77b] font-serif font-bold text-lg absolute">AP</span>
+             <img src="/logo.png?v=2" alt="Aloha Party Logo" className="w-full h-full object-cover relative z-10" onError={(e) => {
+               e.currentTarget.style.display = 'none';
+               e.currentTarget.parentElement?.classList.add('fallback-logo');
+             }} />
+          </div>
+          <div className="hidden sm:block">
+            <span className="font-serif italic font-bold text-2xl tracking-tight text-[#8da77b]">Aloha Party</span>
+            <p className="text-[10px] uppercase tracking-widest text-[#f4949a] font-bold -mt-1">Papelería Creativa</p>
+          </div>
+        </div>
 
       {/* Desktop Navigation Links */}
       <nav id="header-nav" className="hidden md:flex items-center gap-8 text-sm font-medium">
@@ -192,22 +198,22 @@ export default function Header({
 
       {/* Mobile Fullscreen Menu */}
       {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 w-full h-screen bg-white flex flex-col items-center pt-10 gap-8 md:hidden animate-fade-in border-t border-[#867273]/10" style={{ height: '100vh' }}>
+        <div className="absolute top-full left-0 w-full h-screen bg-[#fbf9f8] flex flex-col items-center pt-10 gap-8 md:hidden animate-fade-in border-t border-[#867273]/10" style={{ height: '100vh' }}>
           <button
             onClick={() => closeMobileMenuAndNavigate('home')}
-            className={`text-2xl font-bold ${activeScreen === 'home' ? 'text-[#93474d]' : 'text-[#867273]'}`}
+            className={`text-2xl font-serif font-bold ${activeScreen === 'home' ? 'text-[#8da77b]' : 'text-[#867273]'}`}
           >
             Inicio
           </button>
           <button
             onClick={() => closeMobileMenuAndNavigate('store')}
-            className={`text-2xl font-bold ${activeScreen === 'store' ? 'text-[#93474d]' : 'text-[#867273]'}`}
+            className={`text-2xl font-serif font-bold ${activeScreen === 'store' ? 'text-[#8da77b]' : 'text-[#867273]'}`}
           >
             Tienda
           </button>
           <button
             onClick={() => closeMobileMenuAndNavigate('about')}
-            className={`text-2xl font-bold ${activeScreen === 'about' ? 'text-[#93474d]' : 'text-[#867273]'}`}
+            className={`text-2xl font-serif font-bold ${activeScreen === 'about' ? 'text-[#8da77b]' : 'text-[#867273]'}`}
           >
             Nosotros
           </button>
@@ -216,6 +222,7 @@ export default function Header({
           </div>
         </div>
       )}
+      </div>
     </header>
   );
 }

@@ -9,58 +9,111 @@ interface HomeViewProps {
 export default function HomeView({ setActiveScreen }: HomeViewProps) {
   return (
     <div id="home-view" className="flex flex-col w-full">
-      {/* Hero Section */}
-      <section className="w-full bg-[#f4949a] relative overflow-hidden px-6 md:px-12 py-16 md:py-32 flex flex-col md:flex-row items-center gap-12">
-        {/* Animated Tropical Leaves */}
-        <div className="absolute -top-10 -left-10 text-[#8da77b] opacity-40 animate-[spin_12s_linear_infinite]">
-          <Leaf className="w-40 h-40" />
-        </div>
-        <div className="absolute -bottom-16 right-10 text-[#8da77b] opacity-50 animate-[bounce_5s_ease-in-out_infinite]">
-          <Leaf className="w-48 h-48 rotate-45" />
-        </div>
-        <div className="absolute top-1/4 right-1/3 text-[#8da77b] opacity-30 animate-[pulse_4s_ease-in-out_infinite]">
-          <Leaf className="w-20 h-20 -rotate-90" />
-        </div>
-        <div className="absolute top-1/2 left-1/3 text-[#8da77b] opacity-20 animate-[bounce_6s_ease-in-out_infinite]">
-          <Sparkles className="w-12 h-12" />
+      {/* Boho Hero Section */}
+      <section className="w-full relative overflow-hidden px-6 md:px-12 py-12 md:py-24 flex flex-col md:flex-row items-center gap-12 lg:gap-20 max-w-7xl mx-auto">
+        
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-[#8da77b]/5 rounded-bl-[100px] -z-10"></div>
+        <div className="absolute -left-20 top-20 text-[#f4949a] opacity-10">
+          <Leaf className="w-64 h-64 -rotate-45" />
         </div>
 
-        <div className="flex-1 space-y-6 z-10 relative">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/20 backdrop-blur-sm text-white rounded-full text-xs font-bold border border-white/30 shadow-sm uppercase tracking-wider">
-            <Heart className="w-3.5 h-3.5 fill-white" />
-            Papelería Creativa
-          </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-[1.1] tracking-tight drop-shadow-sm">
-            Detalles únicos para <br />
-            momentos <span className="text-[#8da77b] bg-white px-2 rounded-2xl inline-block -rotate-2 transform hover:rotate-0 transition-transform">inolvidables</span>
+        {/* Left Content */}
+        <div className="flex-1 flex flex-col items-start z-10 w-full pt-8 md:pt-0">
+          <h1 className="flex flex-col relative w-full mb-6">
+            <span className="font-serif font-extrabold text-[#8da77b] text-5xl md:text-7xl lg:text-8xl leading-none tracking-tight">
+              Diseñamos
+            </span>
+            <span className="font-script text-[#f4949a] text-5xl md:text-7xl lg:text-8xl -mt-4 md:-mt-8 ml-4 md:ml-12 transform -rotate-2 relative z-10">
+              momentos únicos
+            </span>
+            {/* Hand-drawn heart accent */}
+            <div className="absolute top-0 right-10 md:right-32 text-[#f4949a] opacity-60">
+              <Heart className="w-12 h-12 stroke-[1.5]" fill="transparent" />
+            </div>
           </h1>
-          <p className="text-white/90 text-lg md:text-xl max-w-lg leading-relaxed font-medium">
-            ¡Dale vida a tus fiestas! Creamos toppers, piñatas personalizadas, banderines y papelería con amor, full color y mucho diseño tropical.
+          
+          <p className="text-[#867273] text-lg md:text-xl max-w-md leading-relaxed font-medium mb-10">
+            Papelería creativa y personalizada para celebrar lo que más importa.
           </p>
-          <div className="flex flex-wrap items-center gap-4 pt-6">
-            <button
-              onClick={() => setActiveScreen('store')}
-              className="flex items-center gap-2 bg-[#8da77b] hover:bg-[#7a936a] text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-base group"
-            >
-              Ir a la Tienda <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button
-              onClick={() => setActiveScreen('about')}
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm border-2 border-white/50 text-white px-8 py-4 rounded-full font-bold transition-all text-base"
-            >
-              Conócenos
-            </button>
+          
+          <button
+            onClick={() => setActiveScreen('store')}
+            className="flex items-center gap-2 bg-[#f4949a] hover:bg-[#e3858b] text-white px-8 py-3 rounded-full font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 text-sm uppercase tracking-widest mb-16"
+          >
+            <Heart className="w-4 h-4 fill-white" /> Conocé nuestra tienda
+          </button>
+
+          {/* 4 Feature Icons Row */}
+          <div className="flex flex-wrap md:flex-nowrap items-start gap-4 md:gap-8 w-full border-t border-[#867273]/20 pt-8">
+            <div className="flex items-center gap-3 w-[45%] md:w-auto">
+              <div className="w-10 h-10 rounded-full border border-[#867273]/30 flex items-center justify-center shrink-0">
+                <Heart className="w-5 h-5 text-[#867273]" strokeWidth={1.5} />
+              </div>
+              <span className="text-[10px] uppercase font-bold text-[#867273] leading-tight">Hecho<br/>con amor</span>
+            </div>
+            <div className="flex items-center gap-3 w-[45%] md:w-auto">
+              <div className="w-10 h-10 rounded-full border border-[#867273]/30 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-[#867273]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+              </div>
+              <span className="text-[10px] uppercase font-bold text-[#867273] leading-tight">Diseños<br/>personalizados</span>
+            </div>
+            <div className="flex items-center gap-3 w-[45%] md:w-auto">
+              <div className="w-10 h-10 rounded-full border border-[#867273]/30 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-[#867273]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+              </div>
+              <span className="text-[10px] uppercase font-bold text-[#867273] leading-tight">Ideal para<br/>cada ocasión</span>
+            </div>
+            <div className="flex items-center gap-3 w-[45%] md:w-auto">
+              <div className="w-10 h-10 rounded-full border border-[#867273]/30 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-[#867273]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>
+              </div>
+              <span className="text-[10px] uppercase font-bold text-[#867273] leading-tight">Envíos a todo<br/>el país</span>
+            </div>
           </div>
         </div>
-        <div className="flex-1 w-full max-w-lg relative z-10">
-          <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl relative border-8 border-white/20 transform rotate-3 hover:rotate-0 transition-transform duration-500">
-            <img 
-              src="/hero.png" 
-              alt="Aloha Party Designs" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#f4949a]/40 to-transparent mix-blend-overlay pointer-events-none"></div>
+
+        {/* Right Image/Collage area */}
+        <div className="flex-1 w-full max-w-lg relative z-10 mt-12 md:mt-0">
+          <div className="relative aspect-[4/3] rounded-[4rem] rounded-tl-none overflow-visible">
+            {/* Main Image styled softly */}
+            <div className="w-full h-full rounded-[4rem] rounded-br-[10rem] rounded-tl-xl overflow-hidden shadow-2xl relative border-4 border-white transform hover:-rotate-1 transition-transform duration-500">
+              <img 
+                src="/hero.png" 
+                alt="Aloha Party Designs" 
+                className="w-full h-full object-cover mix-blend-multiply"
+              />
+            </div>
+            
+            {/* Floating Tags */}
+            <div className="absolute -bottom-8 -left-8 bg-[#8da77b] text-white rounded-full w-28 h-28 flex flex-col items-center justify-center shadow-lg transform -rotate-12 border-4 border-[#fbf9f8] z-20">
+              <span className="font-serif font-bold text-sm text-center leading-tight">Hecho<br/>con amor</span>
+              <Heart className="w-3 h-3 mt-1 fill-white" />
+            </div>
+
+            <div className="absolute -top-6 -right-6 bg-white border border-[#867273]/10 rounded-2xl p-4 shadow-xl transform rotate-6 z-20">
+               <span className="font-script text-[#f4949a] text-2xl font-bold">Feliz cumple</span>
+            </div>
           </div>
+        </div>
+      </section>
+
+      {/* Organic Wavy Divider */}
+      <div className="w-full overflow-hidden leading-[0] -mt-1 md:-mt-4">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-[60px] md:h-[120px]" style={{ transform: 'rotate(180deg)' }}>
+          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#8da77b" fillOpacity="0.3"></path>
+        </svg>
+      </div>
+
+      {/* Inspirational Quote Section */}
+      <section className="w-full bg-[#fbf9f8] py-16 flex flex-col items-center justify-center text-center px-6 relative">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-[#867273] mb-4">♥ Papelería que cuenta historias</span>
+        <h2 className="flex flex-col items-center">
+          <span className="font-serif font-bold text-[#8da77b] text-4xl md:text-5xl">Creamos momentos</span>
+          <span className="font-script text-[#f4949a] text-4xl md:text-5xl -mt-2 transform -rotate-1">que quedan para siempre</span>
+        </h2>
+        <div className="absolute bottom-4 right-10 md:right-1/4 text-[#8da77b] opacity-20">
+          <Leaf className="w-16 h-16" />
         </div>
       </section>
 
