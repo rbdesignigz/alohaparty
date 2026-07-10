@@ -1,0 +1,6 @@
+{
+  "name": "Aloha Party",
+  "description": "E-commerce y panel de administración para Aloha Party - Papelería Creativa. Cuenta con tienda en línea, carrito, checkout seguro simulado con Mercado Pago, panel administrativo de inventario con CRUD completo, y gestión de pedidos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
