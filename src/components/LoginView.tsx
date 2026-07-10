@@ -6,7 +6,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, googleProvider, db } from '../firebase';
 
 // CONFIG: This email will ALWAYS be considered the primary admin and cannot be demoted.
-const PRIMARY_ADMIN_EMAIL = 'admin@alohaparty.com.ar';
+const PRIMARY_ADMIN_EMAIL = 'pablo.da.ber@gmail.com';
 
 interface LoginViewProps {
   login: (user: User) => void;

@@ -229,7 +229,7 @@ export default function AdminView({
 
   // User role change
   const handleUserRoleChange = async (userId: string, currentEmail: string, newRole: 'admin' | 'customer') => {
-    if (currentEmail.toLowerCase() === 'admin@alohaparty.com.ar') {
+    if (currentEmail.toLowerCase() === 'pablo.da.ber@gmail.com') {
       alert('No puedes cambiar el rol del Administrador Principal.');
       return;
     }
@@ -667,7 +667,7 @@ export default function AdminView({
                       {user.email}
                     </div>
                     <div className="col-span-2 flex justify-end">
-                      {user.email.toLowerCase() === 'admin@alohaparty.com.ar' ? (
+                      {user.email.toLowerCase() === 'pablo.da.ber@gmail.com' ? (
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">
                           Admin Principal
                         </span>
