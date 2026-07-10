@@ -11,7 +11,7 @@ interface StoreViewProps {
 export default function StoreView({ products, addToCart, searchQuery }: StoreViewProps) {
   // Sidebar states
   const [selectedCategories, setSelectedCategories] = useState<string[]>(['Todos']);
-  const [maxPrice, setMaxPrice] = useState<number>(100);
+  const [maxPrice, setMaxPrice] = useState<number>(100000);
   const [sortBy, setSortBy] = useState<'recientes' | 'populares'>('recientes');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
@@ -135,8 +135,8 @@ export default function StoreView({ products, addToCart, searchQuery }: StoreVie
             <input
               type="range"
               min="0"
-              max="100"
-              step="5"
+              max="100000"
+              step="1000"
               value={maxPrice}
               onChange={(e) => { setMaxPrice(Number(e.target.value)); setCurrentPage(1); }}
               className="w-full accent-[#4d6543] h-1.5 bg-[#efeded] rounded-lg cursor-pointer"
@@ -144,7 +144,7 @@ export default function StoreView({ products, addToCart, searchQuery }: StoreVie
             <div className="flex justify-between text-xs font-semibold text-[#867273] mt-2">
               <span>$0</span>
               <span className="text-[#93474d] bg-[#93474d]/10 px-2.5 py-0.5 rounded-full">${maxPrice} ARS</span>
-              <span>$100+</span>
+              <span>$100,000+</span>
             </div>
           </div>
         </div>
@@ -210,7 +210,7 @@ export default function StoreView({ products, addToCart, searchQuery }: StoreVie
               id="reset-filters-btn"
               onClick={() => {
                 setSelectedCategories(['Todos']);
-                setMaxPrice(100);
+                setMaxPrice(100000);
               }}
               className="mt-4 px-4 py-1.5 bg-[#93474d] text-white text-xs font-semibold rounded-full hover:bg-[#712d34] transition-all cursor-pointer"
             >
