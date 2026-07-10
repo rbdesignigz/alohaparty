@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingCart, User, Search, PartyPopper, LogIn, LayoutDashboard } from 'lucide-react';
+import { ShoppingCart, User, Search, PartyPopper, LogIn, LayoutDashboard, Menu, X } from 'lucide-react';
 import { ActiveScreen, User as UserType } from '../types';
 
 interface HeaderProps {
@@ -22,9 +22,16 @@ export default function Header({
   logout
 }: HeaderProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const closeMobileMenuAndNavigate = (screen: ActiveScreen) => {
+    setActiveScreen(screen);
+    setIsMobileMenuOpen(false);
+    setSearchQuery('');
+  };
 
   return (
-    <header id="store-header" className="w-full bg-[#fbf9f8] border-b border-[#867273]/20 py-4 px-6 md:px-12 flex flex-col md:flex-row gap-4 justify-between items-center sticky top-0 z-40 backdrop-blur-md bg-opacity-95">
+    <header id="store-header" className="w-full bg-[#fbf9f8] border-b border-[#867273]/20 py-3 md:py-4 px-4 md:px-12 flex flex-row gap-2 justify-between items-center sticky top-0 z-40 backdrop-blur-md bg-opacity-95">
       {/* Brand Logo */}
       <div 
         id="header-logo-container"
@@ -43,8 +50,8 @@ export default function Header({
         </div>
       </div>
 
-      {/* Navigation Links */}
-      <nav id="header-nav" className="flex items-center gap-8 text-sm font-medium">
+      {/* Desktop Navigation Links */}
+      <nav id="header-nav" className="hidden md:flex items-center gap-8 text-sm font-medium">
         <button
           id="nav-home-btn"
           onClick={() => { setActiveScreen('home'); setSearchQuery(''); }}
@@ -81,9 +88,9 @@ export default function Header({
       </nav>
 
       {/* Actions and Search */}
-      <div id="header-actions" className="flex items-center gap-4 w-full md:w-auto justify-end">
+      <div id="header-actions" className="flex items-center gap-2 md:gap-4 w-auto justify-end">
         {/* Search Input */}
-        <div id="search-input-container" className="relative w-full max-w-[200px] md:w-64">
+        <div id="search-input-container" className="relative hidden sm:block w-full max-w-[150px] md:max-w-[200px] lg:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#867273]" />
           <input
             id="search-input-field"
@@ -172,7 +179,42 @@ export default function Header({
             </button>
           )}
         </div>
+        {/* Mobile Hamburger Trigger */}
+        <button
+          id="mobile-menu-trigger"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="md:hidden p-2 text-[#867273] hover:text-[#93474d] rounded-full transition-colors cursor-pointer"
+        >
+          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </div>
+
+      {/* Mobile Fullscreen Menu */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 top-[80px] bg-[#fbf9f8] z-40 flex flex-col items-center pt-10 gap-8 md:hidden animate-fade-in border-t border-[#867273]/10">
+          <button
+            onClick={() => closeMobileMenuAndNavigate('home')}
+            className={`text-2xl font-bold ${activeScreen === 'home' ? 'text-[#93474d]' : 'text-[#867273]'}`}
+          >
+            Inicio
+          </button>
+          <button
+            onClick={() => closeMobileMenuAndNavigate('store')}
+            className={`text-2xl font-bold ${activeScreen === 'store' ? 'text-[#93474d]' : 'text-[#867273]'}`}
+          >
+            Tienda
+          </button>
+          <button
+            onClick={() => closeMobileMenuAndNavigate('about')}
+            className={`text-2xl font-bold ${activeScreen === 'about' ? 'text-[#93474d]' : 'text-[#867273]'}`}
+          >
+            Nosotros
+          </button>
+          <div className="mt-auto mb-12 opacity-30 text-[#8da77b]">
+            <PartyPopper className="w-24 h-24" />
+          </div>
+        </div>
+      )}
     </header>
   );
 }
