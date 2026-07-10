@@ -20,6 +20,9 @@ import {
   ArrowRightLeft
 } from 'lucide-react';
 import { Product, Order, User } from '../types';
+import { doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
+import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_USERS } from '../data';
 
 interface AdminViewProps {
   products: Product[];
@@ -105,11 +108,16 @@ export default function AdminView({
   }, [filteredProducts, currentPage]);
 
   // Delete product action
-  const handleDeleteProduct = (productId: string) => {
+  const handleDeleteProduct = async (productId: string) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este producto? Se quitará de la tienda.')) {
-      setProducts(prev => prev.filter(p => p.id !== productId));
-      if (currentPage > 1 && paginatedProducts.length === 1) {
-        setCurrentPage(prev => prev - 1);
+      try {
+        await deleteDoc(doc(db, 'products', productId));
+        if (currentPage > 1 && paginatedProducts.length === 1) {
+          setCurrentPage(prev => prev - 1);
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Error eliminando el producto.');
       }
     }
   };
@@ -148,7 +156,7 @@ export default function AdminView({
   };
 
   // Submit product creation/editing
-  const handleProductSubmit = (e: React.FormEvent) => {
+  const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName || !formPrice || !formStock) {
       alert('Por favor rellena todos los campos requeridos.');
@@ -170,24 +178,25 @@ export default function AdminView({
 
     if (modalMode === 'edit' && editingProduct) {
       // Edit mode
-      setProducts(prev => prev.map(p => {
-        if (p.id === editingProduct.id) {
-          return {
-            ...p,
-            name: formName,
-            category: formCategory,
-            price: priceNum,
-            stock: stockNum,
-            description: formDescription,
-            image: formImage
-          };
-        }
-        return p;
-      }));
+      try {
+        await setDoc(doc(db, 'products', editingProduct.id), {
+          ...editingProduct,
+          name: formName,
+          category: formCategory,
+          price: priceNum,
+          stock: stockNum,
+          description: formDescription,
+          image: formImage
+        });
+      } catch (e) {
+        console.error(e);
+        alert('Error editando el producto');
+      }
     } else {
       // Add mode
+      const newId = `NEW-${Math.floor(100 + Math.random() * 900)}`;
       const newProd: Product = {
-        id: `NEW-${Math.floor(100 + Math.random() * 900)}`,
+        id: newId,
         name: formName,
         category: formCategory,
         price: priceNum,
@@ -197,20 +206,25 @@ export default function AdminView({
         isRecent: true,
         isPopular: false
       };
-      setProducts(prev => [newProd, ...prev]);
+      try {
+        await setDoc(doc(db, 'products', newId), newProd);
+      } catch (e) {
+        console.error(e);
+        alert('Error creando el producto');
+      }
     }
 
     setShowProductModal(false);
   };
 
   // Orders table filters and status updates
-  const handleOrderStatusChange = (orderId: string, newStatus: 'pending' | 'shipped' | 'delivered') => {
-    setOrders(prev => prev.map(o => {
-      if (o.id === orderId) {
-        return { ...o, status: newStatus };
-      }
-      return o;
-    }));
+  const handleOrderStatusChange = async (orderId: string, newStatus: 'pending' | 'shipped' | 'delivered') => {
+    try {
+      await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
+    } catch (e) {
+      console.error(e);
+      alert('Error cambiando estado de la orden');
+    }
   };
 
   return (
@@ -392,7 +406,7 @@ export default function AdminView({
                 </span>
                 <div className="text-left">
                   <p className="text-[10px] font-bold text-[#867273] uppercase tracking-wider">MONTHLY SALES</p>
-                  <p className="text-xl font-sans font-extrabold text-[#1b1c1c] mt-0.5">${totalSalesAmount.toFixed(2)} USD</p>
+                  <p className="text-xl font-sans font-extrabold text-[#1b1c1c] mt-0.5">${totalSalesAmount.toFixed(2)} ARS</p>
                 </div>
               </div>
 
@@ -759,14 +773,14 @@ export default function AdminView({
                 <label className="text-xs font-bold text-[#534343]">Email de Contacto</label>
                 <input
                   type="email"
-                  defaultValue="hola@alohaparty.cl"
+                  defaultValue="hola@alohaparty.com.ar"
                   className="bg-[#fbf9f8] border border-[#867273]/30 focus:border-[#4d6543] rounded-xl px-4 py-2 text-xs outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#534343]">Envío Base (USD)</label>
+                  <label className="text-xs font-bold text-[#534343]">Envío Base (ARS)</label>
                   <input
                     type="number"
                     defaultValue="4.50"
@@ -777,18 +791,37 @@ export default function AdminView({
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-bold text-[#534343]">Moneda</label>
                   <select className="bg-[#fbf9f8] border border-[#867273]/30 focus:border-[#4d6543] rounded-xl px-4 py-2 text-xs outline-none cursor-pointer">
+                    <option value="ARS">Pesos Argentinos (ARS)</option>
                     <option value="USD">Dólares (USD)</option>
-                    <option value="CLP">Pesos Chilenos (CLP)</option>
                   </select>
                 </div>
               </div>
 
-              <button
-                onClick={() => alert('¡Configuraciones guardadas con éxito!')}
-                className="bg-[#4d6543] hover:bg-[#364d2d] text-white font-bold text-xs py-2.5 px-6 rounded-full mt-4 cursor-pointer self-start"
-              >
-                Guardar Cambios
-              </button>
+              <div className="flex gap-4 mt-4">
+                <button
+                  onClick={() => alert('¡Configuraciones guardadas con éxito!')}
+                  className="bg-[#4d6543] hover:bg-[#364d2d] text-white font-bold text-xs py-2.5 px-6 rounded-full cursor-pointer"
+                >
+                  Guardar Cambios
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!window.confirm('¿Migrar datos iniciales a Firebase? Esto sobreescribirá datos con el mismo ID.')) return;
+                    try {
+                      for (const p of INITIAL_PRODUCTS) await setDoc(doc(db, 'products', p.id), p);
+                      for (const o of INITIAL_ORDERS) await setDoc(doc(db, 'orders', o.id), o);
+                      for (const u of INITIAL_USERS) await setDoc(doc(db, 'users', u.id), u);
+                      alert('Datos iniciales migrados con éxito a Firestore. Ya puedes recargar.');
+                    } catch (e) {
+                      console.error(e);
+                      alert('Ocurrió un error al migrar los datos.');
+                    }
+                  }}
+                  className="bg-[#ba1a1a] hover:bg-[#930000] text-white font-bold text-xs py-2.5 px-6 rounded-full cursor-pointer"
+                >
+                  Migrar Datos a Firebase
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -845,7 +878,7 @@ export default function AdminView({
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#534343]">Precio (USD) *</label>
+                  <label className="text-xs font-bold text-[#534343]">Precio (ARS) *</label>
                   <input
                     id="modal-product-price"
                     type="number"

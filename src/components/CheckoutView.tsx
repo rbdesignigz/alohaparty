@@ -309,7 +309,7 @@ export default function CheckoutView({
                 </div>
                 <div className="border-t border-[#867273]/10 pt-4 flex justify-between items-center font-sans font-bold text-base text-[#1b1c1c]">
                   <span>Total</span>
-                  <span className="text-[#93474d]">${total.toFixed(2)} USD</span>
+                  <span className="text-[#93474d]">${total.toFixed(2)} ARS</span>
                 </div>
               </div>
 
@@ -393,7 +393,7 @@ export default function CheckoutView({
               </div>
               <div className="border-t border-[#867273]/15 pt-3 flex justify-between items-center text-sm font-sans font-bold text-[#1b1c1c]">
                 <span>Total pagado:</span>
-                <span className="text-[#93474d] text-base">${createdOrder.total.toFixed(2)} USD</span>
+                <span className="text-[#93474d] text-base">${createdOrder.total.toFixed(2)} ARS</span>
               </div>
             </div>
 

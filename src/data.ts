@@ -183,7 +183,7 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr-admin',
     name: 'Aloha Admin',
-    email: 'admin@alohaparty.cl',
+    email: 'admin@alohaparty.com.ar',
     role: 'admin'
   },
   {

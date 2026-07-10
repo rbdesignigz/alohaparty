@@ -24,7 +24,7 @@ export default function LoginView({ login, setActiveScreen }: LoginViewProps) {
     }
 
     // Standard logins mapping
-    if (email === 'admin@alohaparty.cl' || email.toLowerCase().includes('admin')) {
+    if (email === 'admin@alohaparty.com.ar' || email.toLowerCase().includes('admin')) {
       const adminUser: User = {
         id: 'usr-admin',
         name: 'Aloha Admin',
@@ -52,7 +52,7 @@ export default function LoginView({ login, setActiveScreen }: LoginViewProps) {
       const adminUser: User = {
         id: 'usr-admin',
         name: 'Aloha Admin',
-        email: 'admin@alohaparty.cl',
+        email: 'admin@alohaparty.com.ar',
         role: 'admin'
       };
       login(adminUser);

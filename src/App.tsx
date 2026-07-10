@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Sparkles, X, Check } from 'lucide-react';
 import { ActiveScreen, Product, CartItem, Order, User } from './types';
 import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_USERS } from './data';
+import { useEffect } from 'react';
+import { collection, onSnapshot, doc, setDoc } from 'firebase/firestore';
+import { db } from './firebase';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import StoreView from './components/StoreView';
@@ -16,10 +19,28 @@ export default function App() {
   const [activeScreen, setActiveScreen] = useState<ActiveScreen>('home');
 
   // Database State
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
-  const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
-  const [users, setUsers] = useState<User[]>(INITIAL_USERS);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  // Firestore sync
+  useEffect(() => {
+    const unsubProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
+      setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
+    });
+    const unsubOrders = onSnapshot(collection(db, 'orders'), (snapshot) => {
+      setOrders(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order)).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+    });
+    const unsubUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
+      setUsers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User)));
+    });
+    return () => {
+      unsubProducts();
+      unsubOrders();
+      unsubUsers();
+    };
+  }, []);
 
   // Cart State (Pre-filled with mockup 3 items for instant high-fidelity demonstration)
   const [cartItems, setCartItems] = useState<CartItem[]>([
@@ -90,8 +111,14 @@ export default function App() {
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   // Finalize order placement
-  const placeOrder = (newOrder: Order) => {
-    setOrders(prev => [newOrder, ...prev]);
+  const placeOrder = async (newOrder: Order) => {
+    try {
+      await setDoc(doc(db, 'orders', newOrder.id), newOrder);
+      triggerNotification('Orden enviada correctamente a Firebase');
+    } catch (e) {
+      console.error(e);
+      triggerNotification('Error al enviar la orden');
+    }
   };
 
   const handleLogin = (user: User) => {

@@ -143,7 +143,7 @@ export default function StoreView({ products, addToCart, searchQuery }: StoreVie
             />
             <div className="flex justify-between text-xs font-semibold text-[#867273] mt-2">
               <span>$0</span>
-              <span className="text-[#93474d] bg-[#93474d]/10 px-2.5 py-0.5 rounded-full">${maxPrice} USD</span>
+              <span className="text-[#93474d] bg-[#93474d]/10 px-2.5 py-0.5 rounded-full">${maxPrice} ARS</span>
               <span>$100+</span>
             </div>
           </div>
