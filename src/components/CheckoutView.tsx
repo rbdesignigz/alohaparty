@@ -31,6 +31,7 @@ export default function CheckoutView({
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [region, setRegion] = useState('Región Metropolitana');
+  const [deliveryMethod, setDeliveryMethod] = useState<'delivery' | 'pickup'>('delivery');
   
   // Mercado Pago & Status State
   const [formErrors, setFormErrors] = useState<string[]>([]);
@@ -41,7 +42,7 @@ export default function CheckoutView({
 
   // Financial calculations
   const subtotal = cartItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
-  const shippingCost = subtotal > 0 ? 4.50 : 0; // Flat $4.50 shipping or free if empty
+  const shippingCost = deliveryMethod === 'delivery' && subtotal > 0 ? 4.50 : 0; // Flat $4.50 shipping or free if pickup
   const total = subtotal + shippingCost;
 
   // Handle pay trigger
@@ -51,13 +52,42 @@ export default function CheckoutView({
     if (!email) errors.push('El correo electrónico es requerido.');
     if (!firstName) errors.push('El nombre es requerido.');
     if (!lastName) errors.push('El apellido es requerido.');
-    if (!address) errors.push('La dirección de envío es requerida.');
-    if (!city) errors.push('La ciudad es requerida.');
+    
+    if (deliveryMethod === 'delivery') {
+      if (!address) errors.push('La dirección de envío es requerida.');
+      if (!city) errors.push('La ciudad es requerida.');
+    }
 
     if (errors.length > 0) {
       setFormErrors(errors);
       // scroll to errors
       document.getElementById('checkout-form-errors')?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+
+    if (deliveryMethod === 'pickup') {
+      // Simulate successful checkout for Store Pickup testing without Mercado Pago
+      setFormErrors([]);
+      setIsProcessing(true);
+      setTimeout(() => {
+        const newOrder: Order = {
+          id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+          customerName: `${firstName} ${lastName}`,
+          email,
+          address: 'Retiro en Sucursal',
+          city: 'Local',
+          region: 'Local',
+          items: [...cartItems],
+          total: parseFloat(total.toFixed(2)),
+          date: new Date().toISOString(),
+          status: 'pending'
+        };
+
+        placeOrder(newOrder);
+        setCreatedOrder(newOrder);
+        setIsProcessing(false);
+        setShowReceiptModal(true);
+      }, 1000);
       return;
     }
 
@@ -242,6 +272,38 @@ export default function CheckoutView({
               )}
 
               <form onSubmit={handleCheckoutSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Delivery Method Selection */}
+                <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row gap-4 mb-2">
+                  <label className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${deliveryMethod === 'delivery' ? 'border-[#f4949a] bg-[#f4949a]/5' : 'border-[#867273]/20 bg-white hover:border-[#f4949a]/30'}`}>
+                    <input 
+                      type="radio" 
+                      name="deliveryMethod" 
+                      value="delivery" 
+                      checked={deliveryMethod === 'delivery'} 
+                      onChange={() => setDeliveryMethod('delivery')} 
+                      className="w-4 h-4 text-[#f4949a] focus:ring-[#f4949a]" 
+                    />
+                    <div>
+                      <p className="font-bold text-sm text-[#1b1c1c]">Envío a Domicilio</p>
+                      <p className="text-[10px] text-[#867273]">Recibe tus productos en casa</p>
+                    </div>
+                  </label>
+                  <label className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${deliveryMethod === 'pickup' ? 'border-[#f4949a] bg-[#f4949a]/5' : 'border-[#867273]/20 bg-white hover:border-[#f4949a]/30'}`}>
+                    <input 
+                      type="radio" 
+                      name="deliveryMethod" 
+                      value="pickup" 
+                      checked={deliveryMethod === 'pickup'} 
+                      onChange={() => setDeliveryMethod('pickup')} 
+                      className="w-4 h-4 text-[#f4949a] focus:ring-[#f4949a]" 
+                    />
+                    <div>
+                      <p className="font-bold text-sm text-[#1b1c1c]">Retiro en Sucursal</p>
+                      <p className="text-[10px] text-[#867273]">Retira gratis (Ideal para pruebas)</p>
+                    </div>
+                  </label>
+                </div>
+
                 <div className="col-span-1 md:col-span-2 flex flex-col gap-1.5">
                   <label className="text-xs font-bold text-[#534343]">Correo Electrónico *</label>
                   <input
@@ -281,48 +343,52 @@ export default function CheckoutView({
                   />
                 </div>
 
-                <div className="col-span-1 md:col-span-2 flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#534343]">Dirección Completa *</label>
-                  <input
-                    id="shipping-address"
-                    type="text"
-                    placeholder="Calle, número, departamento, oficina..."
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    required
-                    className="w-full bg-[#fbf9f8] border border-[#867273]/30 focus:border-[#4d6543] focus:ring-1 focus:ring-[#4d6543] rounded-xl px-4 py-2 text-xs text-[#1b1c1c] outline-none transition-all"
-                  />
-                </div>
+                {deliveryMethod === 'delivery' && (
+                  <>
+                    <div className="col-span-1 md:col-span-2 flex flex-col gap-1.5 mt-2">
+                      <label className="text-xs font-bold text-[#534343]">Dirección Completa *</label>
+                      <input
+                        id="shipping-address"
+                        type="text"
+                        placeholder="Calle, Número, Depto, etc."
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        required
+                        className="w-full px-4 py-3 bg-[#fbf9f8] border border-[#867273]/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f4949a]/50 focus:border-[#f4949a] text-sm text-[#1b1c1c] transition-all"
+                      />
+                    </div>
 
-                <div className="col-span-1 flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#534343]">Ciudad *</label>
-                  <input
-                    id="shipping-city"
-                    type="text"
-                    placeholder="Ej: Santiago"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    required
-                    className="w-full bg-[#fbf9f8] border border-[#867273]/30 focus:border-[#4d6543] focus:ring-1 focus:ring-[#4d6543] rounded-xl px-4 py-2 text-xs text-[#1b1c1c] outline-none transition-all"
-                  />
-                </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-bold text-[#534343]">Ciudad *</label>
+                      <input
+                        id="shipping-city"
+                        type="text"
+                        placeholder="Tu Ciudad"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        required
+                        className="w-full px-4 py-3 bg-[#fbf9f8] border border-[#867273]/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f4949a]/50 focus:border-[#f4949a] text-sm text-[#1b1c1c] transition-all"
+                      />
+                    </div>
 
-                <div className="col-span-1 flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#534343]">Región *</label>
-                  <select
-                    id="shipping-region"
-                    value={region}
-                    onChange={(e) => setRegion(e.target.value)}
-                    className="w-full bg-[#fbf9f8] border border-[#867273]/30 focus:border-[#4d6543] focus:ring-1 focus:ring-[#4d6543] rounded-xl px-4 py-2 text-xs text-[#1b1c1c] outline-none transition-all cursor-pointer"
-                  >
-                    <option value="Región Metropolitana">Región Metropolitana</option>
-                    <option value="Valparaíso">Valparaíso</option>
-                    <option value="Biobío">Biobío</option>
-                    <option value="Coquimbo">Coquimbo</option>
-                    <option value="Araucanía">Araucanía</option>
-                    <option value="Antofagasta">Antofagasta</option>
-                  </select>
-                </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-bold text-[#534343]">Región *</label>
+                      <select
+                        id="shipping-region"
+                        value={region}
+                        onChange={(e) => setRegion(e.target.value)}
+                        className="w-full px-4 py-3 bg-[#fbf9f8] border border-[#867273]/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f4949a]/50 focus:border-[#f4949a] text-sm text-[#1b1c1c] transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="Región Metropolitana">Región Metropolitana</option>
+                        <option value="Valparaíso">Valparaíso</option>
+                        <option value="Biobío">Biobío</option>
+                        <option value="Coquimbo">Coquimbo</option>
+                        <option value="Araucanía">Araucanía</option>
+                        <option value="Antofagasta">Antofagasta</option>
+                      </select>
+                    </div>
+                  </>
+                )}
               </form>
             </section>
           </div>
