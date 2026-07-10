@@ -21,7 +21,7 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
         {/* Left Content */}
         <div className="flex-1 flex flex-col items-start z-10 w-full pt-8 md:pt-0">
           <h1 className="flex flex-col relative w-full mb-6">
-            <span className="font-serif font-extrabold text-[#8da77b] text-5xl md:text-7xl lg:text-8xl leading-none tracking-tight">
+            <span className="font-serif font-extrabold text-[#f4949a] text-5xl md:text-7xl lg:text-8xl leading-none tracking-tight">
               Diseñamos
             </span>
             <span className="font-script text-[#f4949a] text-5xl md:text-7xl lg:text-8xl -mt-4 md:-mt-8 ml-4 md:ml-12 transform -rotate-2 relative z-10">
@@ -86,7 +86,7 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
             </div>
             
             {/* Floating Tags */}
-            <div className="absolute -bottom-8 -left-8 bg-[#8da77b] text-white rounded-full w-28 h-28 flex flex-col items-center justify-center shadow-lg transform -rotate-12 border-4 border-[#fbf9f8] z-20">
+            <div className="absolute -bottom-8 -left-8 bg-[#f4949a] text-white rounded-full w-28 h-28 flex flex-col items-center justify-center shadow-lg transform -rotate-12 border-4 border-[#fbf9f8] z-20">
               <span className="font-serif font-bold text-sm text-center leading-tight">Hecho<br/>con amor</span>
               <Heart className="w-3 h-3 mt-1 fill-white" />
             </div>
@@ -101,7 +101,7 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
       {/* Organic Wavy Divider */}
       <div className="w-full overflow-hidden leading-[0] -mt-1 md:-mt-4">
         <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-[60px] md:h-[120px]" style={{ transform: 'rotate(180deg)' }}>
-          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#8da77b" fillOpacity="0.3"></path>
+          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#f4949a" fillOpacity="0.3"></path>
         </svg>
       </div>
 

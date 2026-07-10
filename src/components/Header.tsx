@@ -33,7 +33,7 @@ export default function Header({
   return (
     <header id="store-header" className="w-full sticky top-0 z-40 flex flex-col shadow-sm">
       {/* Announcement Bar */}
-      <div className="w-full bg-[#8da77b] text-white text-[10px] md:text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 tracking-widest uppercase shadow-inner">
+      <div className="w-full bg-[#f4949a] text-white text-[10px] md:text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 tracking-widest uppercase shadow-inner">
         <span>♥</span> Papelería personalizada para momentos inolvidables <span>♥</span>
       </div>
 
@@ -45,14 +45,14 @@ export default function Header({
           onClick={() => { setActiveScreen('home'); setSearchQuery(''); }}
         >
           <div className="w-14 h-14 md:w-16 md:h-16 overflow-hidden rounded-full border-4 border-white shadow-md group-hover:scale-105 transition-transform duration-300 bg-[#fbf9f8] flex items-center justify-center relative">
-             <span className="text-[#8da77b] font-serif font-bold text-lg absolute">AP</span>
+             <span className="text-[#f4949a] font-serif font-bold text-lg absolute">AP</span>
              <img src="/logo.png?v=2" alt="Aloha Party Logo" className="w-full h-full object-cover relative z-10" onError={(e) => {
                e.currentTarget.style.display = 'none';
                e.currentTarget.parentElement?.classList.add('fallback-logo');
              }} />
           </div>
           <div className="hidden sm:block">
-            <span className="font-serif italic font-bold text-2xl tracking-tight text-[#8da77b]">Aloha Party</span>
+            <span className="font-serif italic font-bold text-2xl tracking-tight text-[#f4949a]">Aloha Party</span>
             <p className="text-[10px] uppercase tracking-widest text-[#f4949a] font-bold -mt-1">Papelería Creativa</p>
           </div>
         </div>
@@ -179,7 +179,7 @@ export default function Header({
             <button
               id="header-login-btn"
               onClick={() => setActiveScreen('login')}
-              className="flex items-center gap-1.5 p-1 px-4 bg-[#93474d] hover:bg-[#712d34] text-white rounded-full transition-all text-xs font-semibold cursor-pointer shadow-sm hover:-translate-y-0.5 active:translate-y-0"
+              className="flex items-center gap-1.5 p-1 px-4 bg-[#f4949a] hover:bg-[#e3858b] text-white rounded-full transition-all text-xs font-semibold cursor-pointer shadow-sm hover:-translate-y-0.5 active:translate-y-0"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>Login</span>
