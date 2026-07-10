@@ -109,7 +109,7 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
       <section className="w-full bg-[#fbf9f8] py-16 flex flex-col items-center justify-center text-center px-6 relative">
         <span className="text-[10px] font-bold uppercase tracking-widest text-[#867273] mb-4">♥ Papelería que cuenta historias</span>
         <h2 className="flex flex-col items-center">
-          <span className="font-serif font-bold text-[#8da77b] text-4xl md:text-5xl">Creamos momentos</span>
+          <span className="font-serif font-bold text-[#f4949a] text-4xl md:text-5xl">Creamos momentos</span>
           <span className="font-script text-[#f4949a] text-4xl md:text-5xl -mt-2 transform -rotate-1">que quedan para siempre</span>
         </h2>
         <div className="absolute bottom-4 right-10 md:right-1/4 text-[#8da77b] opacity-20">
@@ -118,21 +118,22 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
       </section>
 
       {/* Descubre Nuestra Magia Section */}
-      <section className="w-full bg-white px-6 md:px-12 py-20 flex flex-col gap-8">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-4 mb-4">
-          <div>
-            <h2 className="text-3xl font-bold text-[#93474d]">Descubre nuestra magia</h2>
-            <p className="text-[#867273] text-sm mt-2">Papelería creativa hecha a mano para cada ocasión especial.</p>
+      <section className="w-full bg-white px-6 md:px-12 py-20 flex flex-col items-center">
+        <div className="w-full lg:max-w-[60vw] flex flex-col gap-8">
+          <div className="flex flex-col md:flex-row justify-between items-end gap-4 mb-4">
+            <div>
+              <h2 className="text-3xl font-bold text-[#f4949a]">Descubre nuestra magia</h2>
+              <p className="text-[#867273] text-sm mt-2">Papelería creativa hecha a mano para cada ocasión especial.</p>
+            </div>
+            <button 
+              onClick={() => setActiveScreen('store')}
+              className="text-xs font-semibold text-[#867273] hover:text-[#f4949a] flex items-center gap-1"
+            >
+              Ver todo el catálogo <ArrowRight className="w-3 h-3" />
+            </button>
           </div>
-          <button 
-            onClick={() => setActiveScreen('store')}
-            className="text-xs font-semibold text-[#867273] hover:text-[#93474d] flex items-center gap-1"
-          >
-            Ver todo el catálogo <ArrowRight className="w-3 h-3" />
-          </button>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px] md:h-[500px]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px] md:h-[500px]">
           {/* Main big item */}
           <div 
             className="md:col-span-2 relative rounded-3xl overflow-hidden shadow-lg group cursor-pointer"
@@ -174,26 +175,27 @@ export default function HomeView({ setActiveScreen }: HomeViewProps) {
       </section>
 
       {/* Nuestra Historia Section */}
-      <section className="w-full bg-white px-6 md:px-12 py-24 flex flex-col md:flex-row items-center gap-16 relative overflow-hidden">
+      <section className="w-full bg-white px-6 md:px-12 py-24 flex flex-col items-center relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-[#f4949a]/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-10 left-10 text-[#8da77b] opacity-20">
            <Leaf className="w-32 h-32 -rotate-45" />
         </div>
         
-        <div className="flex-1 flex justify-center z-10">
-          <div className="w-[80%] max-w-[400px] aspect-square rounded-[3rem] overflow-hidden shadow-xl border-8 border-[#f4949a]/20 transform -rotate-3">
-            <img src="/history.png" alt="Nuestra Historia" className="w-full h-full object-cover" />
+        <div className="w-full lg:max-w-[60vw] flex flex-col md:flex-row items-center gap-16 z-10">
+          <div className="flex-1 flex justify-center w-full">
+            <div className="w-[80%] max-w-[400px] aspect-square rounded-[3rem] overflow-hidden shadow-xl border-8 border-[#f4949a]/20 transform -rotate-3">
+              <img src="/history.png" alt="Nuestra Historia" className="w-full h-full object-cover" />
+            </div>
           </div>
-        </div>
-        
-        <div className="flex-1 space-y-6 z-10">
-          <p className="text-[#8da77b] font-bold text-sm tracking-widest uppercase flex items-center gap-2">
-            <Sparkles className="w-4 h-4" /> NUESTRA HISTORIA
-          </p>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-[#f4949a] leading-tight tracking-tight">
-            Pasión por el detalle en cada fiesta.
-          </h2>
+          
+          <div className="flex-1 space-y-6 w-full">
+            <p className="text-[#f4949a] font-bold text-sm tracking-widest uppercase flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> NUESTRA HISTORIA
+            </p>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-[#f4949a] leading-tight tracking-tight">
+              Pasión por el detalle en cada fiesta.
+            </h2>
           <div className="space-y-4 text-[#867273] text-lg leading-relaxed font-medium">
             <p>
               En <strong>Aloha Party</strong> creemos que las celebraciones merecen ser tan únicas y divertidas como las personas que las festejan. Nuestra Papelería Creativa nace del amor por el color, el diseño tropical y las ganas de festejar a lo grande.
