@@ -227,6 +227,20 @@ export default function AdminView({
     }
   };
 
+  // User role change
+  const handleUserRoleChange = async (userId: string, currentEmail: string, newRole: 'admin' | 'customer') => {
+    if (currentEmail.toLowerCase() === 'admin@alohaparty.com.ar') {
+      alert('No puedes cambiar el rol del Administrador Principal.');
+      return;
+    }
+    try {
+      await updateDoc(doc(db, 'users', userId), { role: newRole });
+    } catch (e) {
+      console.error(e);
+      alert('Error cambiando el rol del usuario');
+    }
+  };
+
   return (
     <div id="admin-backoffice" className="min-h-screen bg-[#fbf9f8] flex flex-col md:flex-row relative">
       
@@ -653,13 +667,24 @@ export default function AdminView({
                       {user.email}
                     </div>
                     <div className="col-span-2 flex justify-end">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        user.role === 'admin'
-                          ? 'bg-rose-100 text-rose-800'
-                          : 'bg-slate-100 text-slate-800'
-                      }`}>
-                        {user.role === 'admin' ? 'Administrador' : 'Cliente'}
-                      </span>
+                      {user.email.toLowerCase() === 'admin@alohaparty.com.ar' ? (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">
+                          Admin Principal
+                        </span>
+                      ) : (
+                        <select
+                          value={user.role}
+                          onChange={(e) => handleUserRoleChange(user.id, user.email, e.target.value as 'admin' | 'customer')}
+                          className={`text-xs font-bold rounded-lg px-2.5 py-1 border outline-none cursor-pointer ${
+                            user.role === 'admin'
+                              ? 'bg-rose-50 text-rose-700 border-rose-300'
+                              : 'bg-slate-50 text-slate-700 border-slate-300'
+                          }`}
+                        >
+                          <option value="admin">Administrador</option>
+                          <option value="customer">Cliente</option>
+                        </select>
+                      )}
                     </div>
                   </div>
                 ))}
