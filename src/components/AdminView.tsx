@@ -664,7 +664,7 @@ export default function AdminView({
                           <button
                             id={`inventory-delete-${product.id}`}
                             onClick={() => handleDeleteProduct(product.id)}
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-[#867273] hover:bg-red-50 hover:text-red-600 transition-all cursor-pointer"
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-[#867273] hover:bg-[#f4949a]/10 hover:text-[#f4949a] transition-all cursor-pointer"
                             title="Eliminar"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

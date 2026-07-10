@@ -91,7 +91,7 @@ export default function LoginView({ login, setActiveScreen }: LoginViewProps) {
 
           {/* Form alert notices */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs flex items-center gap-2 text-left relative z-10">
+            <div className="bg-[#f4949a]/10 border border-[#f4949a]/30 text-[#e3858b] p-3 rounded-xl text-xs flex items-center gap-2 text-left relative z-10">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>

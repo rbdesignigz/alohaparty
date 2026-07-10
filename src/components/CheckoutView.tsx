@@ -206,7 +206,7 @@ export default function CheckoutView({
                         <button
                           id={`cart-remove-${item.product.id}`}
                           onClick={() => removeFromCart(item.product.id)}
-                          className="text-xs text-[#867273] hover:text-red-600 transition-colors flex items-center gap-1 cursor-pointer font-medium"
+                          className="text-xs text-[#867273] hover:text-[#f4949a] transition-colors flex items-center gap-1 cursor-pointer font-medium"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           <span>Eliminar</span>
@@ -233,7 +233,7 @@ export default function CheckoutView({
 
               {/* Error messages panel */}
               {formErrors.length > 0 && (
-                <div id="checkout-form-errors" className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 text-xs flex flex-col gap-1">
+                <div id="checkout-form-errors" className="bg-[#f4949a]/10 border border-[#f4949a]/30 text-[#e3858b] p-4 rounded-xl mb-6 text-xs flex flex-col gap-1">
                   <p className="font-bold mb-1">Por favor corrige los siguientes errores:</p>
                   {formErrors.map((err, i) => (
                     <li key={i}>{err}</li>
