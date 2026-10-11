@@ -21,7 +21,8 @@ import {
   UploadCloud,
   Images,
   Star,
-  Eye
+  Eye,
+  Menu
 } from 'lucide-react';
 import { Product, Order, User, Category } from '../types';
 import { doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
@@ -55,6 +56,7 @@ export default function AdminView({
 }: AdminViewProps) {
   // Navigation
   const [activeTab, setActiveTab] = useState<AdminTab>('products');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Search & Pagination in products list
   const [searchQuery, setSearchQuery] = useState('');
@@ -390,8 +392,199 @@ export default function AdminView({
   return (
     <div id="admin-backoffice" className="min-h-screen bg-[#fbf9f8] flex flex-col md:flex-row relative">
       
-      {/* SideNavBar Component */}
-      <nav id="admin-sidebar" className="w-full md:w-64 bg-[#f5f3f3] md:fixed md:h-screen p-6 flex flex-col gap-6 border-r border-[#867273]/20 z-15 shrink-0 text-left">
+      {/* Mobile Top Header (Visible solo en celulares < md) */}
+      <header className="md:hidden sticky top-0 z-30 bg-[#f5f3f3] border-b border-[#867273]/20 px-4 py-3 flex items-center justify-between shadow-xs">
+        <div className="flex items-center gap-3">
+          <button
+            id="mobile-admin-hamburger-btn"
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 rounded-xl bg-white text-[#1b1c1c] hover:text-[#f4949a] border border-[#867273]/20 shadow-xs cursor-pointer active:scale-95 transition-all"
+            aria-label="Abrir menú de administración"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <div className="text-left cursor-pointer" onClick={() => setActiveScreen('store')}>
+            <h1 className="text-base font-sans font-extrabold text-[#f4949a] leading-tight">Aloha Party</h1>
+            <p className="text-[9px] text-[#867273] uppercase tracking-wider font-bold">Admin Panel</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleOpenAddModal}
+            className="flex items-center gap-1.5 bg-[#f4949a] hover:bg-[#e3858b] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-xs active:scale-95 transition-all cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Nuevo</span>
+          </button>
+          <button
+            onClick={() => setActiveScreen('store')}
+            className="text-[11px] font-bold text-[#867273] hover:text-[#f4949a] bg-white px-3 py-1.5 rounded-full border border-[#867273]/20 shadow-xs active:scale-95 transition-all cursor-pointer"
+          >
+            Tienda
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Slide-Over Drawer Navigation */}
+      {isMobileMenuOpen && (
+        <div
+          id="mobile-admin-drawer-backdrop"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs md:hidden animate-fade-in flex"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <div
+            id="mobile-admin-drawer"
+            className="w-4/5 max-w-xs bg-[#f5f3f3] h-full p-6 flex flex-col gap-6 shadow-2xl animate-slide-right text-left overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drawer Header with Close Button */}
+            <div className="flex items-center justify-between border-b border-[#867273]/15 pb-4">
+              <div onClick={() => { setActiveScreen('store'); setIsMobileMenuOpen(false); }} className="cursor-pointer">
+                <h2 className="text-lg font-sans font-extrabold text-[#f4949a] tracking-tight">Aloha Party</h2>
+                <p className="text-[9px] text-[#867273] uppercase tracking-widest font-bold">Papelería Creativa</p>
+              </div>
+              <button
+                id="close-mobile-drawer-btn"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-1.5 rounded-full hover:bg-[#efeded] text-[#867273] hover:text-[#ba1a1a] transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* User Card */}
+            <div className="flex items-center gap-3 bg-[#f4949a]/10 rounded-2xl p-3 border border-[#f4949a]/20">
+              <div className="w-9 h-9 rounded-full bg-[#f4949a] text-white flex items-center justify-center font-bold text-xs">
+                AA
+              </div>
+              <div className="text-left">
+                <p className="text-xs font-bold text-[#1b1c1c]">Aloha Admin</p>
+                <p className="text-[9px] text-[#534343] uppercase tracking-wider font-semibold">Backoffice Manager</p>
+              </div>
+            </div>
+
+            {/* Navigation links (closing drawer on click) */}
+            <ul className="flex flex-col gap-1.5 flex-grow">
+              {/* Dashboard */}
+              <li>
+                <button
+                  onClick={() => { setActiveTab('dashboard'); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'dashboard'
+                      ? 'bg-white text-[#f4949a] shadow-xs translate-x-1 font-bold'
+                      : 'text-[#867273] hover:bg-[#efeded]'
+                  }`}
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span>Dashboard</span>
+                </button>
+              </li>
+
+              {/* Categorías */}
+              <li>
+                <button
+                  onClick={() => { setActiveTab('categories'); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'categories'
+                      ? 'bg-[#cce8bd] text-[#364d2d] shadow-xs translate-x-1 font-bold'
+                      : 'text-[#867273] hover:bg-[#efeded]'
+                  }`}
+                >
+                  <FolderPlus className="w-4 h-4" />
+                  <span>Categorías</span>
+                </button>
+              </li>
+
+              {/* Products */}
+              <li>
+                <button
+                  onClick={() => { setActiveTab('products'); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'products'
+                      ? 'bg-[#cce8bd] text-[#364d2d] shadow-xs translate-x-1 font-bold'
+                      : 'text-[#867273] hover:bg-[#efeded]'
+                  }`}
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  <span>Products</span>
+                </button>
+              </li>
+
+              {/* Users */}
+              <li>
+                <button
+                  onClick={() => { setActiveTab('users'); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'users'
+                      ? 'bg-white text-[#f4949a] shadow-xs translate-x-1 font-bold'
+                      : 'text-[#867273] hover:bg-[#efeded]'
+                  }`}
+                >
+                  <Users className="w-4 h-4" />
+                  <span>Users</span>
+                </button>
+              </li>
+
+              {/* Orders */}
+              <li>
+                <button
+                  onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'orders'
+                      ? 'bg-white text-[#f4949a] shadow-xs translate-x-1 font-bold'
+                      : 'text-[#867273] hover:bg-[#efeded]'
+                  }`}
+                >
+                  <ClipboardList className="w-4 h-4" />
+                  <span>Orders</span>
+                  {activeOrdersCount > 0 && (
+                    <span className="ml-auto bg-[#ba1a1a] text-white font-bold text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center">
+                      {activeOrdersCount}
+                    </span>
+                  )}
+                </button>
+              </li>
+
+              {/* Settings */}
+              <li>
+                <button
+                  onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'settings'
+                      ? 'bg-white text-[#f4949a] shadow-xs translate-x-1 font-bold'
+                      : 'text-[#867273] hover:bg-[#efeded]'
+                  }`}
+                >
+                  <SettingsIcon className="w-4 h-4" />
+                  <span>Settings</span>
+                </button>
+              </li>
+            </ul>
+
+            {/* Quick Action Buttons in Drawer */}
+            <div className="flex flex-col gap-2 mt-auto pt-4 border-t border-[#867273]/15">
+              <button
+                onClick={() => { handleOpenAddModal(); setIsMobileMenuOpen(false); }}
+                className="w-full bg-[#f4949a] hover:bg-[#e3858b] text-white text-xs font-bold py-3 rounded-xl shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>New Product</span>
+              </button>
+
+              <button
+                onClick={() => { setActiveScreen('store'); setIsMobileMenuOpen(false); }}
+                className="w-full border border-[#867273]/30 text-[#867273] hover:text-[#f4949a] text-[11px] font-bold py-2 rounded-xl transition-all cursor-pointer text-center"
+              >
+                Volver a la Tienda
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop SideNavBar Component (Oculto en celulares < md, visible en escritorio) */}
+      <nav id="admin-sidebar" className="hidden md:flex md:w-64 bg-[#f5f3f3] md:fixed md:h-screen p-6 flex-col gap-6 border-r border-[#867273]/20 z-15 shrink-0 text-left">
         
         {/* Branding header */}
         <div id="sidebar-branding" className="px-2 pt-2 cursor-pointer" onClick={() => setActiveScreen('store')}>
@@ -535,15 +728,15 @@ export default function AdminView({
       </nav>
 
       {/* Main Backoffice Content Container */}
-      <main id="admin-main-content" className="flex-grow md:ml-64 p-6 md:p-12 max-w-7xl w-full mx-auto">
+      <main id="admin-main-content" className="flex-grow md:ml-64 p-4 sm:p-6 md:p-12 max-w-7xl w-full mx-auto">
         
         {/* TAB 0: CATEGORIES CRUD */}
         {activeTab === 'categories' && (
-          <div id="tab-content-categories" className="flex flex-col gap-8 animate-fade-in">
+          <div id="tab-content-categories" className="flex flex-col gap-6 sm:gap-8 animate-fade-in">
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-left">
               <div>
-                <h2 className="text-2xl font-sans font-bold text-[#1b1c1c] tracking-tight">Product Categories</h2>
+                <h2 className="text-xl sm:text-2xl font-sans font-bold text-[#1b1c1c] tracking-tight">Product Categories</h2>
                 <p className="text-xs text-[#867273] mt-1">Manage dynamic categories for your creative stationery catalog.</p>
               </div>
               <button
@@ -595,10 +788,11 @@ export default function AdminView({
 
         {/* TAB 1: PRODUCT LISTING & CRUD (Active by default) */}
         {activeTab === 'products' && (
-          <div id="tab-content-products" className="flex flex-col gap-8 animate-fade-in">
+          <div id="tab-content-products" className="flex flex-col gap-4 sm:gap-8 animate-fade-in">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-left">
-              <div>
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 text-left">
+              {/* Oculto en celulares para ver directamente los productos */}
+              <div className="hidden sm:block">
                 <h2 className="text-2xl font-sans font-bold text-[#1b1c1c] tracking-tight">Product Inventory</h2>
                 <p className="text-xs text-[#867273] mt-1">Manage and edit your creative stationery catalog.</p>
               </div>
@@ -609,47 +803,47 @@ export default function AdminView({
                 <input
                   id="admin-product-search"
                   type="text"
-                  placeholder="Search products..."
+                  placeholder="Buscar productos..."
                   value={searchQuery}
                   onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                  className="pl-9 pr-4 py-2 w-full bg-white border border-[#867273]/30 text-xs text-[#1b1c1c] rounded-xl outline-none focus:border-[#4d6543] focus:ring-1 focus:ring-[#4d6543] transition-all"
+                  className="pl-9 pr-4 py-2 w-full bg-white border border-[#867273]/30 text-xs text-[#1b1c1c] rounded-xl outline-none focus:border-[#4d6543] focus:ring-1 focus:ring-[#4d6543] transition-all shadow-xs"
                 />
               </div>
             </div>
 
-            {/* Bento statistics grid */}
-            <div id="bento-stats-grid" className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Bento statistics grid compacto para celulares */}
+            <div id="bento-stats-grid" className="grid grid-cols-3 gap-2 sm:gap-6">
               
               {/* Card 1: Total Products */}
-              <div className="bg-white rounded-2xl p-6 border border-[#867273]/15 shadow-xs flex items-center gap-4 hover:-translate-y-0.5 transition-transform">
-                <span className="w-12 h-12 bg-[#f4949a]/10 text-[#f4949a] rounded-full flex items-center justify-center">
-                  <ShoppingBag className="w-6 h-6" />
+              <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-6 border border-[#867273]/15 shadow-xs flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left hover:-translate-y-0.5 transition-transform">
+                <span className="w-8 h-8 sm:w-12 sm:h-12 bg-[#f4949a]/10 text-[#f4949a] rounded-full flex items-center justify-center shrink-0">
+                  <ShoppingBag className="w-4 h-4 sm:w-6 sm:h-6" />
                 </span>
-                <div className="text-left">
-                  <p className="text-[10px] font-bold text-[#867273] uppercase tracking-wider">TOTAL PRODUCTS</p>
-                  <p className="text-xl font-sans font-extrabold text-[#1b1c1c] mt-0.5">{totalProductsCount}</p>
+                <div className="min-w-0">
+                  <p className="text-[8px] sm:text-[10px] font-bold text-[#867273] uppercase tracking-wider truncate">PRODUCTOS</p>
+                  <p className="text-sm sm:text-xl font-sans font-extrabold text-[#1b1c1c] mt-0.5">{totalProductsCount}</p>
                 </div>
               </div>
 
               {/* Card 2: Monthly Sales */}
-              <div className="bg-white rounded-2xl p-6 border border-[#867273]/15 shadow-xs flex items-center gap-4 hover:-translate-y-0.5 transition-transform">
-                <span className="w-12 h-12 bg-[#cce8bd]/50 text-[#4d6543] rounded-full flex items-center justify-center">
-                  <DollarSign className="w-6 h-6" />
+              <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-6 border border-[#867273]/15 shadow-xs flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left hover:-translate-y-0.5 transition-transform">
+                <span className="w-8 h-8 sm:w-12 sm:h-12 bg-[#cce8bd]/50 text-[#4d6543] rounded-full flex items-center justify-center shrink-0">
+                  <DollarSign className="w-4 h-4 sm:w-6 sm:h-6" />
                 </span>
-                <div className="text-left">
-                  <p className="text-[10px] font-bold text-[#867273] uppercase tracking-wider">MONTHLY SALES</p>
-                  <p className="text-xl font-sans font-extrabold text-[#1b1c1c] mt-0.5">${totalSalesAmount.toFixed(2)} ARS</p>
+                <div className="min-w-0">
+                  <p className="text-[8px] sm:text-[10px] font-bold text-[#867273] uppercase tracking-wider truncate">VENTAS</p>
+                  <p className="text-sm sm:text-xl font-sans font-extrabold text-[#1b1c1c] mt-0.5 truncate">${totalSalesAmount.toFixed(0)}</p>
                 </div>
               </div>
 
               {/* Card 3: Active Orders */}
-              <div className="bg-white rounded-2xl p-6 border border-[#867273]/15 shadow-xs flex items-center gap-4 hover:-translate-y-0.5 transition-transform">
-                <span className="w-12 h-12 bg-[#efeded] text-[#5d5f5f] rounded-full flex items-center justify-center">
-                  <ClipboardList className="w-6 h-6" />
+              <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-6 border border-[#867273]/15 shadow-xs flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left hover:-translate-y-0.5 transition-transform">
+                <span className="w-8 h-8 sm:w-12 sm:h-12 bg-[#efeded] text-[#5d5f5f] rounded-full flex items-center justify-center shrink-0">
+                  <ClipboardList className="w-4 h-4 sm:w-6 sm:h-6" />
                 </span>
-                <div className="text-left">
-                  <p className="text-[10px] font-bold text-[#867273] uppercase tracking-wider">ACTIVE ORDERS</p>
-                  <p className="text-xl font-sans font-extrabold text-[#1b1c1c] mt-0.5">{activeOrdersCount}</p>
+                <div className="min-w-0">
+                  <p className="text-[8px] sm:text-[10px] font-bold text-[#867273] uppercase tracking-wider truncate">ÓRDENES</p>
+                  <p className="text-sm sm:text-xl font-sans font-extrabold text-[#1b1c1c] mt-0.5">{activeOrdersCount}</p>
                 </div>
               </div>
             </div>
