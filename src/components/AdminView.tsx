@@ -18,13 +18,17 @@ import {
   Ship,
   Sparkles,
   ArrowRightLeft,
-  UploadCloud
+  UploadCloud,
+  Images,
+  Star,
+  Eye
 } from 'lucide-react';
 import { Product, Order, User, Category } from '../types';
 import { doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_USERS } from '../data';
+import ImageGalleryModal from './ImageGalleryModal';
 
 interface AdminViewProps {
   products: Product[];
@@ -68,25 +72,85 @@ export default function AdminView({
   const [formPrice, setFormPrice] = useState('');
   const [formStock, setFormStock] = useState('');
   const [formDescription, setFormDescription] = useState('');
-  const [formImage, setFormImage] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
+  const [formImage, setFormImage] = useState(''); // Portada principal
+  const [formGallery, setFormGallery] = useState<string[]>([]); // Galería de imágenes adicionales
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+  const [galleryUploadStatus, setGalleryUploadStatus] = useState<string>('');
+  const [galleryUrlInput, setGalleryUrlInput] = useState<string>('');
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Subir imagen de portada a Firebase Storage
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
-      setIsUploading(true);
-      const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+      setIsUploadingCover(true);
+      const storageRef = ref(storage, `products/cover_${Date.now()}_${file.name}`);
       const snapshot = await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(snapshot.ref);
       setFormImage(downloadURL);
     } catch (error) {
-      console.error("Error uploading image: ", error);
-      alert('Error al subir la imagen. Comprueba las reglas de Storage o tu conexión.');
+      console.error("Error uploading cover image: ", error);
+      alert('Error al subir la imagen de portada. Comprueba tu conexión o Storage.');
     } finally {
-      setIsUploading(false);
+      setIsUploadingCover(false);
     }
+  };
+
+  // Subir múltiples fotos para la galería a Firebase Storage
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const fileList = Array.from(files);
+    try {
+      setIsUploadingGallery(true);
+      const newUrls: string[] = [];
+
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList[i];
+        setGalleryUploadStatus(`Subiendo ${i + 1} de ${fileList.length}...`);
+        const storageRef = ref(storage, `products/gallery_${Date.now()}_${i}_${file.name}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(snapshot.ref);
+        newUrls.push(url);
+      }
+
+      setFormGallery(prev => [...prev, ...newUrls]);
+    } catch (error) {
+      console.error("Error uploading gallery images: ", error);
+      alert('Ocurrió un error al subir fotos a la galería.');
+    } finally {
+      setIsUploadingGallery(false);
+      setGalleryUploadStatus('');
+      e.target.value = '';
+    }
+  };
+
+  // Agregar imagen a la galería por URL
+  const handleAddGalleryUrl = () => {
+    const trimmed = galleryUrlInput.trim();
+    if (!trimmed) return;
+    setFormGallery(prev => [...prev, trimmed]);
+    setGalleryUrlInput('');
+  };
+
+  // Eliminar imagen de la galería
+  const handleRemoveGalleryImage = (indexToRemove: number) => {
+    setFormGallery(prev => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  // Convertir una foto de la galería en portada principal (y poner la portada anterior en la galería)
+  const handleSetGalleryAsCover = (index: number) => {
+    const selected = formGallery[index];
+    const previousCover = formImage;
+    setFormImage(selected);
+    setFormGallery(prev => {
+      const remaining = prev.filter((_, idx) => idx !== index);
+      return previousCover ? [previousCover, ...remaining] : remaining;
+    });
   };
 
   // Stats calculation
@@ -148,7 +212,9 @@ export default function AdminView({
     setFormPrice(product.price.toString());
     setFormStock(product.stock.toString());
     setFormDescription(product.description);
-    setFormImage(product.image);
+    setFormImage(product.image || '');
+    setFormGallery(product.images ? [...product.images] : []);
+    setGalleryUrlInput('');
     setShowProductModal(true);
   };
 
@@ -161,6 +227,8 @@ export default function AdminView({
     setFormPrice('');
     setFormStock('');
     setFormDescription('');
+    setFormGallery([]);
+    setGalleryUrlInput('');
     
     // Choose a default nice illustration from our assets or Unsplash randomly
     const defaults = [
@@ -203,7 +271,8 @@ export default function AdminView({
           price: priceNum,
           stock: stockNum,
           description: formDescription,
-          image: formImage
+          image: formImage,
+          images: formGallery
         });
       } catch (e) {
         console.error(e);
@@ -220,6 +289,7 @@ export default function AdminView({
         stock: stockNum,
         description: formDescription || 'Sin descripción.',
         image: formImage,
+        images: formGallery,
         isRecent: true,
         isPopular: false
       };
@@ -613,12 +683,24 @@ export default function AdminView({
                       >
                         {/* Image & Title Column */}
                         <div className="col-span-1 sm:col-span-5 flex items-center gap-4">
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            referrerPolicy="no-referrer"
-                            className="w-12 h-12 rounded-lg object-cover bg-[#efeded] border border-[#867273]/15 shrink-0"
-                          />
+                          <div
+                            onClick={() => setPreviewProduct(product)}
+                            className="relative w-12 h-12 rounded-lg overflow-hidden bg-[#efeded] border border-[#867273]/15 shrink-0 cursor-pointer group/thumb hover:ring-2 hover:ring-[#f4949a] transition-all"
+                            title="Haz clic para previsualizar la galería"
+                          >
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              referrerPolicy="no-referrer"
+                              className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform"
+                            />
+                            {product.images && product.images.length > 0 && (
+                              <span className="absolute bottom-0 right-0 bg-black/70 text-white text-[8px] font-bold px-1 rounded-tl flex items-center gap-0.5">
+                                <Images className="w-2.5 h-2.5" />
+                                +{product.images.length}
+                              </span>
+                            )}
+                          </div>
                           <div className="min-w-0">
                             <p className="text-xs font-bold text-[#1b1c1c] truncate">{product.name}</p>
                             <p className="text-[10px] text-[#867273] sm:hidden mt-0.5">
@@ -984,6 +1066,11 @@ export default function AdminView({
                       for (const p of INITIAL_PRODUCTS) await setDoc(doc(db, 'products', p.id), p);
                       for (const o of INITIAL_ORDERS) await setDoc(doc(db, 'orders', o.id), o);
                       for (const u of INITIAL_USERS) await setDoc(doc(db, 'users', u.id), u);
+                      const uniqueCats = Array.from(new Set(INITIAL_PRODUCTS.map(p => p.category)));
+                      for (const catName of uniqueCats) {
+                        const catId = catName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                        await setDoc(doc(db, 'categories', catId), { name: catName });
+                      }
                       alert('Datos iniciales migrados con éxito a Firestore. Ya puedes recargar.');
                     } catch (e) {
                       console.error(e);
@@ -1003,7 +1090,7 @@ export default function AdminView({
       {/* CRUD Add/Edit Product Modal */}
       {showProductModal && (
         <div id="product-modal-backdrop" className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div id="product-modal-card" className="bg-white rounded-3xl max-w-lg w-full p-6 md:p-8 border border-[#867273]/20 shadow-2xl relative flex flex-col gap-6 animate-scale-up">
+          <div id="product-modal-card" className="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 border border-[#867273]/20 shadow-2xl relative flex flex-col gap-6 animate-scale-up max-h-[90vh] overflow-y-auto scrollbar-thin">
             
             {/* Modal Header */}
             <div className="flex justify-between items-center border-b border-[#867273]/15 pb-4">
@@ -1021,7 +1108,7 @@ export default function AdminView({
             </div>
 
             {/* Modal Form */}
-            <form onSubmit={handleProductSubmit} className="flex flex-col gap-4 text-left">
+            <form onSubmit={handleProductSubmit} className="flex flex-col gap-5 text-left">
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-bold text-[#534343]">Nombre del Producto *</label>
                 <input
@@ -1079,27 +1166,40 @@ export default function AdminView({
                 </div>
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-[#534343]">Imagen del Producto *</label>
-                <div className="relative border-2 border-dashed border-[#867273]/30 rounded-xl p-6 text-center hover:bg-[#fbf9f8] transition-colors group cursor-pointer overflow-hidden bg-white">
+              {/* SECCIÓN 1: IMAGEN DE PORTADA */}
+              <div className="flex flex-col gap-2.5 p-4 bg-[#fbf9f8] rounded-2xl border border-[#867273]/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#4d6543]"></span>
+                    <label className="text-xs font-bold text-[#1b1c1c]">Imagen de Portada (Principal) *</label>
+                  </div>
+                  <span className="text-[10px] text-[#4d6543] bg-[#cce8bd]/60 px-2.5 py-0.5 rounded-full font-bold">
+                    Visible en catálogo
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#867273]">
+                  Es la foto destacada que verán los clientes en las tarjetas de la tienda.
+                </p>
+
+                <div className="relative border-2 border-dashed border-[#867273]/30 rounded-xl p-5 text-center hover:bg-white transition-colors group cursor-pointer overflow-hidden bg-white/80">
                   <input 
                     type="file" 
                     accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={isUploading}
+                    onChange={handleCoverUpload}
+                    disabled={isUploadingCover}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
                   />
                   
-                  {isUploading ? (
+                  {isUploadingCover ? (
                     <div className="flex flex-col items-center justify-center gap-2 h-full py-4">
                       <div className="w-6 h-6 border-2 border-[#4d6543] border-t-transparent rounded-full animate-spin"></div>
-                      <span className="text-xs font-bold text-[#4d6543]">Subiendo imagen...</span>
+                      <span className="text-xs font-bold text-[#4d6543]">Subiendo portada a Firebase...</span>
                     </div>
                   ) : formImage ? (
-                    <div className="flex flex-col items-center gap-3">
-                      <img src={formImage} alt="Preview" className="h-32 object-contain rounded-lg border border-[#867273]/20" />
+                    <div className="flex flex-col items-center gap-2.5">
+                      <img src={formImage} alt="Portada Preview" className="h-32 object-contain rounded-lg border border-[#867273]/20 shadow-xs" />
                       <span className="text-[10px] font-bold text-[#867273] underline group-hover:text-[#f4949a] relative z-0">
-                        Haz clic o arrastra para cambiar la imagen
+                        Haz clic o arrastra para cambiar la portada
                       </span>
                     </div>
                   ) : (
@@ -1108,12 +1208,112 @@ export default function AdminView({
                         <UploadCloud className="w-5 h-5" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-[#1b1c1c]">Sube o arrastra una imagen</p>
+                        <p className="text-xs font-bold text-[#1b1c1c]">Sube o arrastra la portada</p>
                         <p className="text-[10px] text-[#867273]">PNG, JPG o WEBP</p>
                       </div>
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* SECCIÓN 2: GALERÍA DE IMÁGENES ADICIONALES */}
+              <div className="flex flex-col gap-2.5 p-4 bg-[#fbf9f8] rounded-2xl border border-[#867273]/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Images className="w-4 h-4 text-[#f4949a]" />
+                    <label className="text-xs font-bold text-[#1b1c1c]">Galería de Fotos Adicionales</label>
+                  </div>
+                  <span className="text-[10px] text-[#e3858b] bg-[#ffdada]/60 px-2.5 py-0.5 rounded-full font-bold">
+                    {formGallery.length} {formGallery.length === 1 ? 'foto' : 'fotos'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#867273]">
+                  Al hacer clic en la portada en la tienda, el cliente verá esta galería completa.
+                </p>
+
+                {/* Controles de carga para la galería */}
+                <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+                  <label className="relative flex items-center justify-center gap-2 px-4 py-2 bg-white border border-[#867273]/30 hover:border-[#f4949a] hover:bg-[#fff5f5] text-[#1b1c1c] text-xs font-bold rounded-xl cursor-pointer transition-colors shadow-xs shrink-0">
+                    <UploadCloud className="w-4 h-4 text-[#f4949a]" />
+                    <span>{isUploadingGallery ? (galleryUploadStatus || 'Subiendo fotos...') : 'Subir Fotos a Galería'}</span>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleGalleryUpload}
+                      disabled={isUploadingGallery}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <div className="flex-1 flex gap-1.5">
+                    <input
+                      type="url"
+                      placeholder="O pega URL de imagen (https://...)"
+                      value={galleryUrlInput}
+                      onChange={(e) => setGalleryUrlInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddGalleryUrl(); } }}
+                      className="flex-1 bg-white border border-[#867273]/30 focus:border-[#4d6543] rounded-xl px-3 py-1.5 text-xs outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddGalleryUrl}
+                      className="px-3 py-1.5 bg-[#4d6543] hover:bg-[#364d2d] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shrink-0"
+                      title="Agregar enlace a la galería"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Grilla de miniaturas de la galería */}
+                {formGallery.length > 0 ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 mt-2 max-h-48 overflow-y-auto p-1">
+                    {formGallery.map((imgUrl, idx) => (
+                      <div
+                        key={`${imgUrl}-${idx}`}
+                        className="group/item relative aspect-square rounded-xl overflow-hidden border border-[#867273]/25 bg-white shadow-xs"
+                      >
+                        <img
+                          src={imgUrl}
+                          alt={`Galería ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                        
+                        {/* Overlay con acciones */}
+                        <div className="absolute inset-0 bg-black/65 opacity-0 group-hover/item:opacity-100 transition-opacity flex flex-col justify-between p-1.5">
+                          <div className="flex justify-between items-center">
+                            <button
+                              type="button"
+                              onClick={() => handleSetGalleryAsCover(idx)}
+                              className="p-1 rounded-full bg-white/90 text-[#364d2d] hover:bg-white hover:scale-110 transition-all cursor-pointer"
+                              title="Hacer Portada Principal"
+                            >
+                              <Star className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveGalleryImage(idx)}
+                              className="p-1 rounded-full bg-[#ba1a1a]/90 text-white hover:bg-[#ba1a1a] hover:scale-110 transition-all cursor-pointer"
+                              title="Eliminar foto"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                          <span className="text-[9px] text-white/90 text-center font-bold">
+                            #{idx + 1}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-3 px-4 border border-dashed border-[#867273]/25 rounded-xl bg-white/50 text-center">
+                    <p className="text-[11px] text-[#867273]">
+                      No hay fotos adicionales aún. Puedes subir una o varias imágenes para que los clientes vean más detalles.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -1191,6 +1391,14 @@ export default function AdminView({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Lightbox Modal para previsualizar galería en el panel Admin */}
+      {previewProduct && (
+        <ImageGalleryModal
+          product={previewProduct}
+          onClose={() => setPreviewProduct(null)}
+        />
       )}
     </div>
   );

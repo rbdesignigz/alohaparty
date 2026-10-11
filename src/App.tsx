@@ -3,8 +3,9 @@ import { Sparkles, X, Check } from 'lucide-react';
 import { ActiveScreen, Product, CartItem, Order, User, Category } from './types';
 import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_USERS } from './data';
 import { useEffect } from 'react';
-import { collection, onSnapshot, doc, setDoc } from 'firebase/firestore';
-import { db } from './firebase';
+import { collection, onSnapshot, doc, setDoc, getDoc } from 'firebase/firestore';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { db, auth } from './firebase';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import StoreView from './components/StoreView';
@@ -18,34 +19,112 @@ export default function App() {
   // Navigation State
   const [activeScreen, setActiveScreen] = useState<ActiveScreen>('home');
 
-  // Database State
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  // Database State - Inicializado con datos seguros para evitar catálogos vacíos
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [categories, setCategories] = useState<Category[]>(() => {
+    const uniqueCats = Array.from(new Set(INITIAL_PRODUCTS.map(p => p.category)));
+    return uniqueCats.map(name => ({ id: name.toLowerCase().replace(/[^a-z0-9]/g, '-'), name }));
+  });
   const [orders, setOrders] = useState<Order[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  // Firestore sync
+  // Escuchar estado de autenticación (restaurar sesión al recargar)
   useEffect(() => {
-    const unsubProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
-      setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          const isPrimaryAdmin = user.email?.toLowerCase() === 'pablo.da.ber@gmail.com';
+          const role = isPrimaryAdmin ? 'admin' : (userDoc.exists() ? (userDoc.data().role || 'customer') : 'customer');
+          setCurrentUser({
+            id: user.uid,
+            name: user.displayName || user.email?.split('@')[0] || 'Usuario',
+            email: user.email || '',
+            role: role
+          });
+        } catch (e) {
+          console.warn('Error al obtener rol del usuario:', e);
+          const isPrimaryAdmin = user.email?.toLowerCase() === 'pablo.da.ber@gmail.com';
+          setCurrentUser({
+            id: user.uid,
+            name: user.displayName || user.email?.split('@')[0] || 'Usuario',
+            email: user.email || '',
+            role: isPrimaryAdmin ? 'admin' : 'customer'
+          });
+        }
+      } else {
+        setCurrentUser(null);
+      }
     });
-    const unsubCategories = onSnapshot(collection(db, 'categories'), (snapshot) => {
-      setCategories(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Category)).sort((a, b) => a.name.localeCompare(b.name)));
-    });
-    const unsubOrders = onSnapshot(collection(db, 'orders'), (snapshot) => {
-      setOrders(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order)).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-    });
-    const unsubUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
-      setUsers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User)));
-    });
+    return () => unsubscribe();
+  }, []);
+
+  // Sincronización pública con Firestore: Productos y Categorías
+  useEffect(() => {
+    const unsubProducts = onSnapshot(
+      collection(db, 'products'),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
+        }
+      },
+      (error) => {
+        console.warn('Firestore: No se pudo leer "products", usando catálogo inicial:', error.message);
+      }
+    );
+
+    const unsubCategories = onSnapshot(
+      collection(db, 'categories'),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          setCategories(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Category)).sort((a, b) => a.name.localeCompare(b.name)));
+        }
+      },
+      (error) => {
+        console.warn('Firestore: No se pudo leer "categories", usando categorías iniciales:', error.message);
+      }
+    );
+
     return () => {
       unsubProducts();
       unsubCategories();
+    };
+  }, []);
+
+  // Sincronización restringida con Firestore: Órdenes y Usuarios (Solo para Admin autenticado)
+  useEffect(() => {
+    if (currentUser?.role !== 'admin') {
+      setOrders([]);
+      setUsers([]);
+      return;
+    }
+
+    const unsubOrders = onSnapshot(
+      collection(db, 'orders'),
+      (snapshot) => {
+        setOrders(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order)).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      },
+      (error) => {
+        console.warn('Firestore órdenes restringidas:', error.message);
+      }
+    );
+
+    const unsubUsers = onSnapshot(
+      collection(db, 'users'),
+      (snapshot) => {
+        setUsers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User)));
+      },
+      (error) => {
+        console.warn('Firestore usuarios restringidos:', error.message);
+      }
+    );
+
+    return () => {
       unsubOrders();
       unsubUsers();
     };
-  }, []);
+  }, [currentUser]);
 
   // Cart State (Starts empty)
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -122,7 +201,12 @@ export default function App() {
     triggerNotification(`¡Hola de nuevo, ${user.name}!`);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (e) {
+      console.warn('Error cerrando sesión:', e);
+    }
     setCurrentUser(null);
     setActiveScreen('store');
     triggerNotification('Sesión cerrada con éxito');

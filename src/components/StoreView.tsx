@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { ShoppingCart, Star, Sparkles, Filter, ChevronLeft, ChevronRight, SlidersHorizontal, Info } from 'lucide-react';
+import { ShoppingCart, Star, Sparkles, Filter, ChevronLeft, ChevronRight, SlidersHorizontal, Info, Images } from 'lucide-react';
 import { Product, Category } from '../types';
+import ImageGalleryModal from './ImageGalleryModal';
 
 interface StoreViewProps {
   products: Product[];
@@ -16,6 +17,7 @@ export default function StoreView({ products, categories: dynamicCategories, add
   const [sortBy, setSortBy] = useState<'recientes' | 'populares'>('recientes');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
+  const [galleryProduct, setGalleryProduct] = useState<Product | null>(null);
 
   // Available categories (combining 'Todos' with dynamic categories from Firebase)
   const categories = useMemo(() => {
@@ -243,15 +245,36 @@ export default function StoreView({ products, categories: dynamicCategories, add
                     </span>
                   )}
 
-                  {/* Product Image */}
-                  <div className="relative aspect-square overflow-hidden bg-[#efeded]">
+                  {/* Product Image con Galería interactiva */}
+                  <div
+                    onClick={() => setGalleryProduct(product)}
+                    className="relative aspect-square overflow-hidden bg-[#efeded] cursor-pointer group/img"
+                    title="Haz clic para ver la galería de imágenes"
+                  >
                     <img
                       src={product.image}
                       alt={product.name}
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <span className="absolute bottom-3 left-3 bg-white/80 backdrop-blur-xs text-[#867273] text-[9px] font-bold px-2.5 py-0.5 rounded-full">
+
+                    {/* Badge contador si el producto tiene fotos de galería */}
+                    {product.images && product.images.length > 0 && (
+                      <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 flex items-center gap-1 shadow-sm">
+                        <Images className="w-3 h-3 text-[#ffdada]" />
+                        {product.images.length + 1}
+                      </span>
+                    )}
+
+                    {/* Overlay al pasar el mouse indicando que se puede abrir la galería */}
+                    <div className="absolute inset-0 bg-black/25 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center z-10">
+                      <span className="bg-white/95 text-[#1b1c1c] text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 transform scale-95 group-hover/img:scale-100 transition-transform">
+                        <Images className="w-3.5 h-3.5 text-[#f4949a]" />
+                        Ver fotos
+                      </span>
+                    </div>
+
+                    <span className="absolute bottom-3 left-3 bg-white/80 backdrop-blur-xs text-[#867273] text-[9px] font-bold px-2.5 py-0.5 rounded-full z-10">
                       {product.category}
                     </span>
                   </div>
@@ -346,6 +369,15 @@ export default function StoreView({ products, categories: dynamicCategories, add
           </div>
         )}
       </main>
+
+      {/* Lightbox Modal de Galería de Imágenes */}
+      {galleryProduct && (
+        <ImageGalleryModal
+          product={galleryProduct}
+          onClose={() => setGalleryProduct(null)}
+          addToCart={addToCart}
+        />
+      )}
     </div>
   );
 }

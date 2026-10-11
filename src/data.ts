@@ -8,6 +8,11 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 15.00,
     description: 'Capas de cartulina perlada y detalles en foil dorado. Perfecto para tartas mágicas y cumpleaños de ensueño.',
     image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&auto=format&fit=crop&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80'
+    ],
     stock: 45,
     isRecent: true,
     isPopular: true
@@ -19,6 +24,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 22.50,
     description: 'Ideal como centro de mesa o dulcero. Hecho a mano con papel crepé premium y detalles en relieve. Incluye compuerta secreta para relleno.',
     image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&auto=format&fit=crop&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1507504038482-76210f6ec33d?w=800&auto=format&fit=crop&q=80'
+    ],
     stock: 12,
     isRecent: true,
     isPopular: false

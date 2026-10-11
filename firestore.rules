@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Función para verificar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Productos: lectura pública para que cualquier visitante vea el catálogo.
+    // Escritura permitida para usuarios autenticados (admin).
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Categorías: lectura pública para filtros del catálogo.
+    // Escritura permitida para usuarios autenticados (admin).
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Órdenes: cualquiera puede crear una orden (checkout de clientes/invitados).
+    // Lectura y modificación permitida para usuarios autenticados.
+    match /orders/{orderId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    // Usuarios: lectura y escritura para usuarios autenticados.
+    match /users/{userId} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

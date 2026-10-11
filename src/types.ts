@@ -9,7 +9,8 @@ export interface Product {
   category: string;
   price: number;
   description: string;
-  image: string;
+  image: string; // Portada principal
+  images?: string[]; // Galería de imágenes adicionales
   stock: number;
   isRecent: boolean;
   isPopular: boolean;
