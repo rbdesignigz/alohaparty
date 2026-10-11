@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { ShoppingCart, Star, Sparkles, Filter, ChevronLeft, ChevronRight, SlidersHorizontal, Info, Images } from 'lucide-react';
+import { ShoppingCart, Star, Sparkles, Filter, ChevronLeft, ChevronRight, SlidersHorizontal, Info, Images, X, RotateCcw } from 'lucide-react';
 import { Product, Category } from '../types';
 import ImageGalleryModal from './ImageGalleryModal';
 
@@ -18,11 +18,20 @@ export default function StoreView({ products, categories: dynamicCategories, add
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
   const [galleryProduct, setGalleryProduct] = useState<Product | null>(null);
+  const [showMobileFilters, setShowMobileFilters] = useState<boolean>(false);
 
   // Available categories (combining 'Todos' with dynamic categories from Firebase)
   const categories = useMemo(() => {
     return ['Todos', ...dynamicCategories.map(c => c.name)];
   }, [dynamicCategories]);
+
+  // Helpers para filtros
+  const handleResetFilters = () => {
+    setSelectedCategories(['Todos']);
+    setMaxPrice(100000);
+    setCurrentPage(1);
+  };
+  const hasActiveFilters = !selectedCategories.includes('Todos') || maxPrice < 100000;
 
   // Handle Category selection
   const handleCategoryChange = (category: string) => {
@@ -88,8 +97,8 @@ export default function StoreView({ products, categories: dynamicCategories, add
   return (
     <div id="store-view" className="w-full max-w-7xl mx-auto px-6 md:px-12 py-8 flex flex-col lg:flex-row gap-8">
       
-      {/* Sidebar Filters */}
-      <aside id="store-sidebar" className="w-full lg:w-64 shrink-0 flex flex-col gap-6">
+      {/* Sidebar Filters (Visible on desktop, oculto en mobile) */}
+      <aside id="store-sidebar" className="hidden lg:flex lg:w-64 shrink-0 flex-col gap-6">
         
         {/* Categories Panel */}
         <div id="filter-categories-card" className="bg-[#ffffff] rounded-2xl p-6 border border-[#867273]/20 shadow-sm">
@@ -159,37 +168,52 @@ export default function StoreView({ products, categories: dynamicCategories, add
       {/* Product Area */}
       <main id="store-catalog-main" className="flex-grow flex flex-col gap-6">
         
-        {/* Catalog Header with Sorting Options */}
+        {/* Catalog Header with Sorting Options and Mobile Filter Button */}
         <div id="catalog-controls-header" className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 className="font-sans font-bold text-2xl text-[#1b1c1c] tracking-tight">Explora Nuestra Tienda</h2>
             <p className="text-xs text-[#867273] mt-1">Detalles creativos y artesanales para momentos inolvidables.</p>
           </div>
           
-          {/* Recientes vs Populares tabs */}
-          <div id="sort-tabs-container" className="flex gap-2 bg-[#efeded]/80 p-1 rounded-full self-stretch sm:self-auto justify-center">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
+            {/* Botón para abrir el menú de filtros en móviles */}
             <button
-              id="sort-recientes-btn"
-              onClick={() => { setSortBy('recientes'); setCurrentPage(1); }}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                sortBy === 'recientes'
-                  ? 'bg-white text-[#f4949a] shadow-sm'
-                  : 'text-[#867273] hover:text-[#f4949a]'
-              }`}
+              id="mobile-filters-trigger-btn"
+              onClick={() => setShowMobileFilters(true)}
+              className="lg:hidden flex items-center gap-2 px-3.5 py-2 bg-white border border-[#867273]/25 hover:border-[#f4949a] rounded-full text-xs font-bold text-[#1b1c1c] shadow-xs active:scale-95 transition-all cursor-pointer"
             >
-              Recientes
+              <SlidersHorizontal className="w-3.5 h-3.5 text-[#f4949a]" />
+              <span>Filtros {selectedCategories.length > 0 && !selectedCategories.includes('Todos') ? `(${selectedCategories.length})` : ''}</span>
+              {hasActiveFilters && (
+                <span className="w-2 h-2 rounded-full bg-[#f4949a] animate-pulse"></span>
+              )}
             </button>
-            <button
-              id="sort-populares-btn"
-              onClick={() => { setSortBy('populares'); setCurrentPage(1); }}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                sortBy === 'populares'
-                  ? 'bg-white text-[#f4949a] shadow-sm'
-                  : 'text-[#867273] hover:text-[#f4949a]'
-              }`}
-            >
-              Populares
-            </button>
+
+            {/* Recientes vs Populares tabs */}
+            <div id="sort-tabs-container" className="flex gap-2 bg-[#efeded]/80 p-1 rounded-full">
+              <button
+                id="sort-recientes-btn"
+                onClick={() => { setSortBy('recientes'); setCurrentPage(1); }}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  sortBy === 'recientes'
+                    ? 'bg-white text-[#f4949a] shadow-sm'
+                    : 'text-[#867273] hover:text-[#f4949a]'
+                }`}
+              >
+                Recientes
+              </button>
+              <button
+                id="sort-populares-btn"
+                onClick={() => { setSortBy('populares'); setCurrentPage(1); }}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  sortBy === 'populares'
+                    ? 'bg-white text-[#f4949a] shadow-sm'
+                    : 'text-[#867273] hover:text-[#f4949a]'
+                }`}
+              >
+                Populares
+              </button>
+            </div>
           </div>
         </div>
 
@@ -369,6 +393,118 @@ export default function StoreView({ products, categories: dynamicCategories, add
           </div>
         )}
       </main>
+
+      {/* Drawer Móvil de Filtros y Categorías */}
+      {showMobileFilters && (
+        <div id="mobile-filters-drawer-overlay" className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs lg:hidden animate-fade-in">
+          <div 
+            id="mobile-filters-drawer-backdrop" 
+            className="absolute inset-0" 
+            onClick={() => setShowMobileFilters(false)} 
+          />
+          <div 
+            id="mobile-filters-drawer-content" 
+            className="relative w-full max-w-xs bg-[#ffffff] h-full shadow-2xl flex flex-col z-10 animate-slide-left overflow-hidden"
+          >
+            {/* Drawer Header */}
+            <div className="p-5 border-b border-[#867273]/15 flex items-center justify-between bg-[#fbf9f8]">
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-[#f4949a]" />
+                <h3 className="font-sans font-bold text-base text-[#1b1c1c]">Filtros y Categorías</h3>
+              </div>
+              <button
+                id="close-mobile-filters-btn"
+                onClick={() => setShowMobileFilters(false)}
+                className="p-1.5 text-[#867273] hover:text-[#1b1c1c] rounded-full hover:bg-black/5 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Drawer Body (Scrollable) */}
+            <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-6">
+              {/* Categorías */}
+              <div>
+                <h4 className="font-sans font-bold text-xs uppercase tracking-wider text-[#867273] mb-3">
+                  Categorías
+                </h4>
+                <div className="flex flex-col gap-2.5">
+                  {categories.map((cat) => {
+                    const isChecked = selectedCategories.includes(cat);
+                    return (
+                      <label 
+                        key={cat} 
+                        className="flex items-center gap-3 text-sm text-[#534343] cursor-pointer hover:text-[#f4949a] transition-colors py-1"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleCategoryChange(cat)}
+                          className="w-4 h-4 rounded text-[#4d6543] focus:ring-[#4d6543] border-[#867273]/30 cursor-pointer"
+                        />
+                        <span className={`${isChecked ? 'font-semibold text-[#f4949a]' : ''}`}>
+                          {cat}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Precio Máximo */}
+              <div className="pt-4 border-t border-[#867273]/10">
+                <h4 className="font-sans font-bold text-xs uppercase tracking-wider text-[#867273] mb-3">
+                  Precio Máximo
+                </h4>
+                <input
+                  type="range"
+                  min="0"
+                  max="100000"
+                  step="1000"
+                  value={maxPrice}
+                  onChange={(e) => { setMaxPrice(Number(e.target.value)); setCurrentPage(1); }}
+                  className="w-full accent-[#4d6543] h-1.5 bg-[#efeded] rounded-lg cursor-pointer"
+                />
+                <div className="flex justify-between text-xs font-semibold text-[#867273] mt-2">
+                  <span>$0</span>
+                  <span className="text-[#f4949a] bg-[#f4949a]/10 px-2.5 py-0.5 rounded-full">${maxPrice} ARS</span>
+                  <span>$100,000+</span>
+                </div>
+              </div>
+
+              {/* Aviso artesanal */}
+              <div className="bg-[#cce8bd]/30 rounded-xl p-4 border border-[#4d6543]/20 flex gap-2.5 items-start mt-2">
+                <Info className="w-4 h-4 text-[#4d6543] shrink-0 mt-0.5" />
+                <p className="text-[11px] text-[#516947] leading-relaxed">
+                  Cada topper, piñata y cajita se diseña y ensambla artesanalmente con materiales ecológicos.
+                </p>
+              </div>
+            </div>
+
+            {/* Drawer Footer Actions */}
+            <div className="p-4 border-t border-[#867273]/15 bg-[#fbf9f8] flex items-center gap-2">
+              {hasActiveFilters && (
+                <button
+                  id="reset-mobile-filters-btn"
+                  onClick={handleResetFilters}
+                  className="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-[#867273]/30 hover:border-[#867273] rounded-xl text-xs font-semibold text-[#534343] transition-all cursor-pointer"
+                  title="Restablecer filtros"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Limpiar</span>
+                </button>
+              )}
+              <button
+                id="apply-mobile-filters-btn"
+                onClick={() => setShowMobileFilters(false)}
+                className="flex-1 py-2.5 bg-[#4d6543] hover:bg-[#364d2d] text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                Ver resultados ({filteredProducts.length})
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Lightbox Modal de Galería de Imágenes */}
       {galleryProduct && (
